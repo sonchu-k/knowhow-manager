@@ -1,0 +1,5 @@
+{
+  "knowhow_dir": "knowhow",
+  "inbox_dir": "inbox",
+  "sensitive_terms_file": ".sensitive-terms.txt"
+}

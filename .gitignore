@@ -5,6 +5,9 @@ inbox/*
 # 検出したい固有名詞のリスト(それ自体が特定情報)
 .sensitive-terms.txt
 
+# 個人ごとのフォルダ設定
+knowhow.config.local.json
+
 .DS_Store
 __pycache__/
 .env
