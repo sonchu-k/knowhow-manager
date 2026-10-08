@@ -7,7 +7,7 @@
     python3 check_sensitive.py --show-config           解決済みのフォルダ設定を表示
 
 フォルダの場所は knowhow.config.json で指定する。knowhow.config.local.json があれば
-その値で上書きする。どちらもなければ既定値(knowhow / inbox / .sensitive-terms.txt)を使う。
+その値で上書きする。どちらもなければ既定値(knowhow / inbox / .sensitive-terms.txt / policies)を使う。
 相対パスは設定ファイルのあるフォルダが基準。絶対パスと ~ も使える。
 抽象化の度合い(abstraction_level: low / medium / high)も同じファイルで指定する。
 
@@ -56,7 +56,11 @@ DEFAULTS = {
     "knowhow_dir": "knowhow",
     "inbox_dir": "inbox",
     "sensitive_terms_file": ".sensitive-terms.txt",
+    "policies_dir": "policies",
 }
+
+# 中身を git に入れてはいけないフォルダ(元資料、規定)
+PRIVATE_DIR_KEYS = ("inbox_dir", "policies_dir")
 
 
 # パス以外の設定: キー -> (既定値, 使える値)
@@ -182,6 +186,15 @@ def git_toplevel(directory: Path) -> Path | None:
     return Path(result.stdout.strip()).resolve() if result.returncode == 0 else None
 
 
+def is_ignored(directory: Path) -> bool | None:
+    """フォルダの中身が git から無視されるか。git 管理外の場所なら None。"""
+    toplevel = git_toplevel(directory)
+    if toplevel is None:
+        return None
+    probe = directory / "probe.txt"
+    return git("check-ignore", "-q", str(probe), cwd=toplevel).returncode == 0
+
+
 def staged_files() -> list[Path]:
     toplevel = git_toplevel(Path.cwd())
     if toplevel is None:
@@ -202,13 +215,10 @@ def show_config(
     for key, value in options.items():
         print(f"{key}: {value}")
 
-    inbox = paths["inbox_dir"]
-    toplevel = git_toplevel(inbox)
-    if toplevel is not None:
-        probe = inbox / "probe.txt"
-        if git("check-ignore", "-q", str(probe), cwd=toplevel).returncode != 0:
+    for key in PRIVATE_DIR_KEYS:
+        if is_ignored(paths[key]) is False:
             print(
-                f"WARNING inbox_dir が git 管理対象になっています。.gitignore に追加してください: {inbox}",
+                f"WARNING {key} が git 管理対象になっています。.gitignore に追加してください: {paths[key]}",
                 file=sys.stderr,
             )
     return 0
@@ -232,9 +242,10 @@ def main() -> int:
         if args.pre_commit:
             staged = [path.resolve() for path in staged_files()]
             blocked = [
-                path
+                (key, path)
                 for path in staged
-                if path.is_relative_to(paths["inbox_dir"]) and path.name != ".gitkeep"
+                for key in PRIVATE_DIR_KEYS
+                if path.is_relative_to(paths[key]) and path.name != ".gitkeep"
             ]
             files = [
                 path
@@ -249,8 +260,8 @@ def main() -> int:
 
     terms = load_terms(paths["sensitive_terms_file"])
     errors, warnings = [], []
-    for path in blocked:
-        errors.append(f"{path}: [元資料] inbox_dir 配下のファイルはコミットできません")
+    for key, path in blocked:
+        errors.append(f"{path}: [管理外] {key} 配下のファイルはコミットできません")
     for path in files:
         file_errors, file_warnings = check_file(path, terms)
         errors.extend(file_errors)

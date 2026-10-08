@@ -2,6 +2,10 @@
 inbox/*
 !inbox/.gitkeep
 
+# 守秘義務契約や社内規程(それ自体が外に出せない)
+policies/*
+!policies/.gitkeep
+
 # 検出したい固有名詞のリスト(それ自体が特定情報)
 .sensitive-terms.txt
 
