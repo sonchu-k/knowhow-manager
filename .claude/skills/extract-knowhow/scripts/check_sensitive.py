@@ -9,6 +9,7 @@
 フォルダの場所は knowhow.config.json で指定する。knowhow.config.local.json があれば
 その値で上書きする。どちらもなければ既定値(knowhow / inbox / .sensitive-terms.txt)を使う。
 相対パスは設定ファイルのあるフォルダが基準。絶対パスと ~ も使える。
+抽象化の度合い(abstraction_level: low / medium / high)も同じファイルで指定する。
 
 終了コード: 0 = 問題なし、1 = 特定情報の疑いあり、2 = 設定や引数の誤り。
 --strict を付けると警告もエラーとして扱う。
@@ -58,6 +59,12 @@ DEFAULTS = {
 }
 
 
+# パス以外の設定: キー -> (既定値, 使える値)
+OPTIONS = {
+    "abstraction_level": ("high", ("low", "medium", "high")),
+}
+
+
 class ConfigError(Exception):
     pass
 
@@ -69,8 +76,10 @@ def find_root(start: Path) -> Path:
     return start
 
 
-def load_config(config_path: Path | None) -> tuple[Path, list[Path], dict[str, Path]]:
-    """(基準フォルダ, 読み込んだ設定ファイル, 解決済みパス) を返す。"""
+def load_config(
+    config_path: Path | None,
+) -> tuple[Path, list[Path], dict[str, Path], dict[str, str]]:
+    """(基準フォルダ, 読み込んだ設定ファイル, 解決済みパス, パス以外の設定) を返す。"""
     if config_path is not None:
         if not config_path.is_file():
             raise ConfigError(f"設定ファイルが見つかりません: {config_path}")
@@ -80,7 +89,7 @@ def load_config(config_path: Path | None) -> tuple[Path, list[Path], dict[str, P
         root = find_root(Path.cwd().resolve())
         candidates = [root / CONFIG_FILENAME, root / LOCAL_CONFIG_FILENAME]
 
-    values = dict(DEFAULTS)
+    values = {**DEFAULTS, **{key: default for key, (default, _) in OPTIONS.items()}}
     loaded = []
     for candidate in candidates:
         if not candidate.is_file():
@@ -91,22 +100,27 @@ def load_config(config_path: Path | None) -> tuple[Path, list[Path], dict[str, P
             raise ConfigError(f"{candidate}: JSON として読めません({error})")
         if not isinstance(data, dict):
             raise ConfigError(f"{candidate}: オブジェクト形式で書いてください")
-        unknown = sorted(set(data) - set(DEFAULTS))
+        unknown = sorted(set(data) - set(values))
         if unknown:
             raise ConfigError(
-                f"{candidate}: 未知のキー {', '.join(unknown)}(使えるのは {', '.join(DEFAULTS)})"
+                f"{candidate}: 未知のキー {', '.join(unknown)}(使えるのは {', '.join(values)})"
             )
         for key, value in data.items():
             if not isinstance(value, str) or not value.strip():
                 raise ConfigError(f"{candidate}: {key} は空でない文字列で指定してください")
+        for key, (_, allowed) in OPTIONS.items():
+            if key in data and data[key] not in allowed:
+                raise ConfigError(
+                    f"{candidate}: {key} は {' / '.join(allowed)} のいずれかで指定してください"
+                )
         values.update(data)
         loaded.append(candidate)
 
     resolved = {}
-    for key, value in values.items():
-        path = Path(value).expanduser()
+    for key in DEFAULTS:
+        path = Path(values[key]).expanduser()
         resolved[key] = (path if path.is_absolute() else root / path).resolve()
-    return root, loaded, resolved
+    return root, loaded, resolved, {key: values[key] for key in OPTIONS}
 
 
 def load_terms(path: Path) -> list[str]:
@@ -176,13 +190,17 @@ def staged_files() -> list[Path]:
     return [toplevel / name for name in result.stdout.split("\0") if name]
 
 
-def show_config(root: Path, loaded: list[Path], paths: dict[str, Path]) -> int:
+def show_config(
+    root: Path, loaded: list[Path], paths: dict[str, Path], options: dict[str, str]
+) -> int:
     print(f"基準フォルダ: {root}")
     names = ", ".join(path.name for path in loaded) or "なし(既定値を使用)"
     print(f"設定ファイル: {names}")
     for key, path in paths.items():
         note = "" if path.exists() else "  ※存在しません"
         print(f"{key}: {path}{note}")
+    for key, value in options.items():
+        print(f"{key}: {value}")
 
     inbox = paths["inbox_dir"]
     toplevel = git_toplevel(inbox)
@@ -206,9 +224,9 @@ def main() -> int:
     args = parser.parse_args()
 
     try:
-        root, loaded, paths = load_config(args.config)
+        root, loaded, paths, options = load_config(args.config)
         if args.show_config:
-            return show_config(root, loaded, paths)
+            return show_config(root, loaded, paths, options)
 
         blocked = []
         if args.pre_commit:
