@@ -1,28 +1,29 @@
 # knowhow-manager
 
-資料から特定情報を除いたノウハウを抽出し、蓄積するリポジトリ。
+A repository for extracting know-how from material with the identifying information removed, and accumulating it.
 
-## 構成
+## Layout
 
-- `knowhow.config.json` — フォルダの場所と、抽象化の度合いの設定。`knowhow.config.local.json`(git 管理外)があればそちらが優先
-- `knowhow/` — 蓄積されたノウハウ(`knowhow_dir` の既定値)。`<カテゴリ>/<タイトル>.md`、目次は `INDEX.md`
-- `inbox/` — 処理前の元資料を置く場所(`inbox_dir` の既定値)。git 管理外
-- `.claude/skills/extract-knowhow/` — 資料からノウハウを抽出・保存するスキル
-- `.claude/skills/search-knowhow/` — 蓄積されたノウハウを検索・参照するスキル
-- `policies/` — 守秘義務契約や社内規程の置き場(`policies_dir` の既定値)。git 管理外
-- `.claude/skills/check-policy/` — 規定に照らして設定と運用を判定するスキル
-- `.sensitive-terms.txt` — 検出したい固有名詞のリスト(`sensitive_terms_file` の既定値)。git 管理外
+- `knowhow.config.json` — folder locations and the abstraction level. `knowhow.config.local.json` (untracked by git) takes precedence when present
+- `knowhow/` — accumulated know-how (default for `knowhow_dir`). `<category>/<title>.md`, indexed by `INDEX.md`
+- `inbox/` — where unprocessed source documents are placed (default for `inbox_dir`). Untracked by git
+- `policies/` — where confidentiality agreements and internal regulations are placed (default for `policies_dir`). Untracked by git
+- `.claude/skills/extract-knowhow/` — skill that extracts know-how from material and saves it
+- `.claude/skills/search-knowhow/` — skill that searches and references accumulated know-how
+- `.claude/skills/check-policy/` — skill that judges the settings and practice against a policy
+- `.sensitive-terms.txt` — list of proper nouns to detect (default for `sensitive_terms_file`). Untracked by git
 
-## ルール
+## Rules
 
-- ノウハウや元資料の場所を決め打ちしない。作業の最初に `knowhow.config.json` と `knowhow.config.local.json` を確認する。
-- 資料からノウハウを取り出す作業は `extract-knowhow` スキルの手順に従う。
-- ノウハウをどこまで抽象化するかは `knowhow.config.json` の `abstraction_level`(`low` / `medium` / `high`、既定は `high`)に従う。依頼の中で度合いが指定されたら、その依頼に限ってそちらを優先する。
-- `high` では、固有名詞を消した出来事の記録ではなく、場面が変わっても成り立つ原理として書く。元の資料の項目名・並び順・言い回し・経緯を持ち込まない。
-- ユーザーのコメントや指示がノウハウのもとになる場合は、その主張を別の内容に差し替えず、述べられていない理由や条件を推測で埋めない。
-- ノウハウは、下書きの全文をユーザーに見せて「問題ない」と確認が取れるまで保存しない。修正の指摘があれば直して見せ直す。下書きは `<inbox_dir>/_drafts/` に置く。
-- 蓄積されたノウハウを調べる・参照する作業は `search-knowhow` スキルの手順に従う。蓄積にある内容と一般知識は分けて答える。
-- 規定(守秘義務契約、社内規程など)に照らした確認は `check-policy` スキルの手順に従う。判定は下調べであって法的な判断ではない。迷うところを「対応している」と言い切らない。規定の本文や相手方の名前を git 管理対象のファイルに書かない。
-- 元資料の内容や引用を、git 管理対象のファイルに書かない。コミットメッセージにも元資料の固有名詞を書かない。
-- ノウハウを追加・変更したら `python3 .claude/skills/extract-knowhow/scripts/check_sensitive.py` を実行する。
-- コミット・プッシュはユーザーに頼まれたときだけ行う。
+- Write the files in this repository (skills, references, scripts, README, commit messages) in English. Talk to the user, and write know-how, in the user's language.
+- Do not hard-code where know-how or source documents live. Check `knowhow.config.json` and `knowhow.config.local.json` first.
+- Follow the `extract-knowhow` skill when taking know-how out of material.
+- How far to abstract follows `abstraction_level` in `knowhow.config.json` (`low` / `medium` / `high`, default `high`). If the request names a level, that takes precedence for that request only.
+- At `high`, write a principle that holds when the setting changes, not a record of an event with the proper nouns removed. Do not carry over the source's item names, ordering, wording, or narrative.
+- When the user's comment or instruction is the basis for the know-how, do not swap the claim for something else, and do not fill in unstated reasons or conditions by guessing.
+- Do not save know-how until the full draft has been shown to the user and they have confirmed it is fine. If corrections come back, revise and show it again. Drafts go in `<inbox_dir>/_drafts/`.
+- Follow the `search-knowhow` skill when looking up or referencing accumulated know-how. Keep what is in the store separate from general knowledge.
+- Follow the `check-policy` skill when checking against a policy (confidentiality agreement, internal regulation, and so on). The judgment is groundwork, not a legal judgment. Never say "compliant" where there is doubt. Do not write policy text or the counterparty's name into any git-tracked file.
+- Do not write source content or quotations into any git-tracked file. Keep proper nouns from the source out of commit messages too.
+- After adding or changing know-how, run `python3 .claude/skills/extract-knowhow/scripts/check_sensitive.py`.
+- Commit or push only when the user asks.

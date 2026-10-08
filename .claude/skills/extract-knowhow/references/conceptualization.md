@@ -1,132 +1,132 @@
-# 概念に引き上げる
+# Lifting to a concept
 
-固有名詞を消しただけの文章は、「誰の話か分からない出来事の記録」にすぎない。別の場面では使いにくく、しかも構成や言い回しが元のままなので、元の資料を知る人には出どころが分かる。
+Text with only the proper nouns removed is "a record of an event whose owner is unknown". It is hard to use in another setting, and because its structure and wording are unchanged, anyone who knows the source can tell where it came from.
 
-残すのは出来事ではなく、**出来事から取り出した原理**である。原理まで引き上げると、別の分野でも使えるようになり、同時に元の資料の形が消える。再利用できることと特定できないことは、ここで両立する。
+What should remain is the **principle taken from the event**, not the event. Lifting to a principle makes the result usable in other fields and erases the shape of the source at the same time. That is where reusable and not identifiable are both achieved.
 
-## 抽象化の度合い(設定)
+## Abstraction level (setting)
 
-どこまで引き上げるかは、`knowhow.config.json` の `abstraction_level` で決まる。値は `low` / `medium` / `high` の3つで、既定は `high`。ユーザーが依頼の中で度合いを指定した場合(「今回は low で」など)は、その依頼に限ってそちらに従う。
+How far to lift is set by `abstraction_level` in `knowhow.config.json`. The values are `low`, `medium`, and `high`; the default is `high`. If the user names a level in the request ("use low this time"), follow that for that request only.
 
-| | `low` 具体 | `medium` 分野内の一般化 | `high` 原理(最大) |
+| | `low` concrete | `medium` generalized within the field | `high` principle (maximum) |
 |---|---|---|---|
-| 中心に置くもの | その場の教訓と具体的な手順(下の表の段階1) | 分野の中で通用する方法と、その理由(段階1と2の間) | 分野をまたいで成り立つ原理(段階2) |
-| 分野の言葉 | 使う | 使う | 使わずに説明する |
-| 転用の確かめ方 | 同じ種類の次の案件で使えるか | 同じ分野の別の組織・別の案件で使えるか | まったく違う分野の場面を2つ挙げられるか |
-| 項目の列挙・様式・手順 | 実務で使える形で残してよい | 必要なものに絞り、自分の言葉と並びに直す | 写さない。なぜ要るのかという原理を書く |
-| 数値 | 桁感や比率に丸めて残してよい | 理由の説明に必要なものだけ丸めて残す | 原理に関係がなければ書かない |
-| 経緯 | 特定情報を除いた短い説明なら可 | 書かない。因果の説明にする | 書かない。因果の説明にする |
-| 例 | 元の事例を一般化したものでよい | 同じ分野の一般的な例 | 別の分野の説明用の例 |
-| 1つの資料から残る件数の目安 | 候補ごとに1件(数件〜) | 近いものをまとめて2〜4件 | 原理ごとに1〜3件 |
-| 元を突き止められる可能性 | 高い | 中程度 | 低い(公開資料では残る) |
-| 向いている使い方 | 同じ業務を繰り返すチーム内の手順集。元が公開資料の場合 | 同じ職種・分野の中での共有 | 分野をまたぐ共有。元の資料の出どころを伏せたい場合 |
+| What sits at the center | The lesson from that setting and concrete steps (stage 1 in the table below) | A method that works within the field, and its reason (between stages 1 and 2) | A principle that holds across fields (stage 2) |
+| Field vocabulary | Used | Used | Explained without it |
+| Transfer check | Would it work on the next engagement of the same kind? | Would it work for another organization or engagement in the same field? | Can you name two settings in quite different fields? |
+| Lists, forms, procedures | May stay in a directly usable form | Narrow to what is needed; rewrite in your own words and order | Do not copy. Write the principle of why they are needed |
+| Numbers | May stay, rounded to order of magnitude or ratio | Only those needed to explain the reason, rounded | Leave out unless the principle depends on them |
+| Narrative of what happened | A short account with identifying information removed is acceptable | Leave out. Explain the cause and effect instead | Leave out. Explain the cause and effect instead |
+| Examples | The original case, generalized, is acceptable | A general example from the same field | An illustrative example from a different field |
+| Typical number kept per document | One per candidate (several or more) | Merge similar ones; two to four | One per principle; one to three |
+| Chance of being traced back | High | Medium | Low (remains for public sources) |
+| Suited to | A procedure collection for a team that repeats the same work; public source material | Sharing within the same profession or field | Sharing across fields; when the origin must not show |
 
-どの度合いでも変わらないこと:
+What does not change with the level:
 
-- 固有名詞や識別子は、[anonymization.md](anonymization.md) の基準で取り除く。
-- 何にでも言える一般論(段階3)にはしない。
-- 資料にない内容を補った場合は、確認の際に区別して示す。
-- 機械チェックと、保存前のユーザー確認を行う。
-- 使った度合いを、ノウハウの `abstraction` に記録する。
+- Proper nouns and identifiers are removed by the standard in [anonymization.md](anonymization.md).
+- Never write a platitude that applies to anything (stage 3).
+- When you add content that is not in the material, mark it separately at confirmation.
+- Run the mechanical check and get the user's confirmation before saving.
+- Record the level used in the know-how's `abstraction` field.
 
-`low` と `medium` は、構成や言い回しが元の資料に近くなるぶん、元の資料を知る人や検索する人に出どころが分かりやすい。非公開の資料を `low` で処理する場合は、確認の際にその旨をユーザーに伝える。
+At `low` and `medium`, structure and wording stay closer to the source, so someone who knows the source or searches for it can recognize the origin more easily. When non-public material is processed at `low`, tell the user so at confirmation.
 
-以下の「引き上げの手順」「元の資料の形を持ち込まない」は `high` を前提に書いてある。`medium` と `low` では、上の表で許されている範囲だけ緩めて読む。
+The sections "Lifting procedure" and "Do not carry over the shape of the source" below are written for `high`. For `medium` and `low`, relax only what the table above allows.
 
-## 抽象の段階
+## Stages of abstraction
 
-| 段階 | 中身 | 例(架空) |
+| Stage | Content | Example (fictional) |
 |---|---|---|
-| 0 出来事 | 誰が何をしてどうなったか | 初回の見積もりに難色を示されたが、次に3案を並べたら真ん中の案で合意できた |
-| 1 その場の教訓 | 同じ場面でどうするか | 見積もりは3案出す |
-| 2 原理 | なぜそうなるのか。場面が変わっても成り立つ仕組み | 選択肢が1つだと相手の判断は「受けるか断るか」になり、複数あると「どれを選ぶか」になる。決めてもらいたいときは、判断の種類が変わる形で示す |
-| 3 一般論 | 何にでも言えること | 相手の立場に立って提案する |
+| 0 Event | Who did what and what happened | The first quote met resistance, but when three plans were presented side by side they agreed on the middle one |
+| 1 Lesson from that setting | What to do in the same setting | Present three quotes |
+| 2 Principle | Why it happens; a mechanism that holds when the setting changes | With one option the other party's decision is "accept or refuse"; with several it becomes "which one". When you want a decision, present things in a form that changes the kind of decision |
+| 3 Platitude | Something true of anything | Make proposals from the other party's point of view |
 
-ノウハウの中心に置くのは**段階2**である。
+The center of the know-how is **stage 2**.
 
-- 段階0は書かない。裏付けの種類と数だけを残す。
-- 段階1は、原理の「やり方」の一つとして添える。
-- 段階3まで上がると、資料がなくても書ける内容になり、読んでも行動が変わらない。
+- Do not write stage 0. Keep only the kind and count of evidence.
+- Add stage 1 as one of the practices under the principle.
+- At stage 3 the content could be written without the material, and reading it changes nothing.
 
-## 引き上げの手順
+## Lifting procedure
 
-候補ごとに、次の順で考える。1〜4は頭の中で行い、途中経過を下書きに残さない。
+Think through each candidate in this order. Do steps 1 to 4 in your head; do not leave the intermediate reasoning in the draft.
 
-1. **出来事を一文にする。** 何をして、どうなったか。
-2. **なぜそうなったかを、元の資料の分野の言葉を使わずに言う。** 「障害」「見積もり」「入札」といった分野の語を使わずに説明できたものが、原理の候補になる。分野の語なしでは説明できないなら、まだ出来事の言い換えにとどまっている。
-3. **転用を試す。** 元の資料とはまったく違う場面を2つ思い浮かべ、同じ原理がそこでも働くかを確かめる。2つ挙げられなければ、段階1にとどまっているので、もう一段上げる。
-4. **上がりすぎを確かめる。** 「どんなときには成り立たないか」を言えるかを試す。言えないもの、あるいは資料を読まなくても書けたものは、段階3まで上がっている。成り立つ条件を付けて一段下げる。
-5. **同じ原理に行き着く候補をまとめ、数を絞る。** 1つの資料から拾った候補の多くは、同じ原理の別の現れである。原理ごとに1件にまとめ、個々の候補は「やり方」の項目にする。1つの資料から残るのは、多くの場合1〜3件になる。同じ資料から作ったノウハウは、日付や書きぶりが揃うので同じ出どころだと分かりやすく、論点の組み合わせから元の資料を絞り込まれる。件数が多いほど絞り込まれやすいので、原理として弱いもの・他と重なるものは落とし、強いものだけを残す。
-6. **元の資料の形を持ち込まずに書く。** 次の節を参照。
+1. **Put the event in one sentence.** What was done, and what came of it.
+2. **Say why it turned out that way without using the vocabulary of the source's field.** If you can explain it without words like "incident", "quote", or "tender", you have a candidate principle. If you cannot explain it without them, it is still a paraphrase of the event.
+3. **Try transferring it.** Think of two settings quite unlike the source and check whether the same principle operates there. If you cannot name two, it is still at stage 1; go up one more.
+4. **Check that it has not gone too far.** Try to say when it would not hold. If you cannot, or if you could have written it without reading the material, it has reached stage 3. Add the condition under which it holds and come down one.
+5. **Merge candidates that reach the same principle, and narrow the number.** Many of the candidates from one document are different appearances of the same principle. Make one item per principle and turn the individual candidates into practices. One document usually leaves one to three. Know-how made from the same document shares dates and style, so it is easy to see it shares an origin, and the combination of topics narrows down the source. The more items, the easier that is, so drop the ones that are weak as principles or overlap with others and keep only the strong ones.
+6. **Write without carrying over the shape of the source.** See the next section.
 
-## 元の資料の形を持ち込まない
+## Do not carry over the shape of the source
 
-原理は自分の言葉と自分の構成で書く。次のものは、固有名詞がなくても出どころの手がかりになる。
+Write the principle in your own words and your own structure. Each of the following is a clue to the origin even with no proper nouns left.
 
-| 持ち込まないもの | 理由と、代わりにすること |
+| Do not carry over | Why, and what to do instead |
 |---|---|
-| 項目名、分類名、並び順 | 列挙の形は指紋になる。元の資料に10項目の様式があっても、写さない。「なぜその項目が要るのか」という原理を書き、項目は自分の言葉で必要なものだけ挙げる |
-| 造語、珍しい言い回し | 一般的な話題の語と組み合わさると、検索で一意に絞り込める。ありふれた言葉に置き換える |
-| 本筋でない数値や進行の細部 | 「2回に分けて合計2時間」のような細部は、原理に関係がなければ書かない |
-| 発言や文章の言い換え | 語順を保った言い換えは、元を見つけたあとの照合で決め手になる。資料を閉じて、原理から書き起こす |
-| 経緯の説明 | 「元になった事例では…」「実際に…したことがある」という段落は、出来事をそのまま残す。書かない。因果の説明として一般的な形で書く |
-| 元の事例を使った例 | 例が必要なら、元の資料とは別の分野の、説明用の例を自分で作る。「例えば」と前置きし、実際にあった事例のように書かない |
-| 原理から導けない「やり方」の項目 | 元の資料に書いてあったというだけで、原理とのつながりが薄い項目(その資料の今後の予定、感想の一つなど)は、検索の決め手になるうえ、ノウハウの焦点も薄める。「やり方」には、原理から「だからこうする」と導ける項目だけを書く |
-| 元の資料の流れに沿った並び | 「やり方」を元の資料の章立てや時系列の順に並べると、項目を言い換えていても照合できる。原理から見て大事な順に並べ直し、近い項目はまとめる |
-| 文脈を戻すタグや分類 | 本文で消した業界・職種・案件の種類を、タグやカテゴリ、`source_type` で書き戻さない |
+| Item names, classification names, ordering | The shape of a list is a fingerprint. Even if the source has a ten-field form, do not copy it. Write the principle of why those fields are needed, and name only the necessary ones in your own words |
+| Coined terms, unusual phrases | Combined with an ordinary topic word, they pin the source down in a search. Replace with common words |
+| Numbers and procedural details off the main point | A detail like "two sessions, two hours in total" is left out unless the principle depends on it |
+| Paraphrases of statements or text | A paraphrase that keeps the word order becomes decisive once the source has been found. Close the material and write from the principle |
+| Narrative of what happened | Paragraphs like "in the original case…" or "this actually happened when…" keep the event intact. Do not write them. Explain the cause and effect in general form |
+| Examples that use the original case | If an example is needed, make up an illustrative one from a different field. Introduce it with "for example" and do not write it as if it really happened |
+| Practices that do not follow from the principle | An item that is there only because the source said it, with a weak link to the principle (the source's future plans, one person's impression), is a strong search clue and also dilutes the focus. List only practices that follow from the principle as "therefore do this" |
+| Ordering that follows the flow of the source | If the practices are listed in the order of the source's chapters or timeline, they can be matched even when reworded. Reorder by importance from the principle's point of view and merge similar ones |
+| Tags or classification that restore context | Do not put the industry, role, or kind of engagement removed from the body back in through tags, category, or `source_type` |
 
-## 元が公開されている資料の場合
+## When the source is public
 
-公開されている記事や議事録は、固有名詞と形をすべて取り除いても、論点の組み合わせで検索すれば見つかることがある。原理の水準まで引き上げ、件数を絞れば見つかりにくくはなるが、完全には防げない。元が公開資料で、複数のノウハウを残す場合は、確認の際にその旨をユーザーに伝える。非公開の資料でも、元の資料を読んだことのある関係者に対しては同じことが言える。
+A public article or set of minutes can sometimes be found by searching on the combination of topics even after every proper noun and all of its shape is gone. Lifting to the level of principle and narrowing the number makes it harder to find, but cannot prevent it entirely. When the source is public and several know-how items are being kept, tell the user so at confirmation. The same applies to non-public material with respect to people who have read it.
 
-## 例(架空)
+## Example (fictional)
 
-**元の資料にあったこと**
+**What the source said**
 
-> 障害報告の様式を「発生日時・経過・原因・対処・今後の対策」の5項目から、「要約・影響・根本原因・きっかけ・復旧方法・検知方法・恒久対策・学び・時系列・分析」の10項目に変えた。以前の様式では、原因欄が現象の名前だけで終わり、うまくいったことは誰も書かなかった。
+> The incident report form was changed from five fields, "date and time, course of events, cause, action taken, future measures", to ten: "summary, impact, root cause, trigger, recovery, detection, permanent measures, lessons, timeline, analysis". With the old form, the cause field ended at the name of the symptom, and nobody wrote down what had gone well.
 
-**悪い例: 固有名詞を消して、形はそのまま**
+**Bad: proper nouns removed, shape unchanged**
 
-> 障害の振り返り票は10項目にする。要約、影響、根本原因、きっかけ、復旧方法、検知方法、恒久対策、学び、時系列、分析。元の票は5項目で、原因が現象名のまま終わっていた。
+> Give the incident review form ten fields: summary, impact, root cause, trigger, recovery, detection, permanent measures, lessons, timeline, analysis. The old form had five, and causes ended at the symptom name.
 
-項目名と並びが元のままで、分野も経緯も残っている。別の分野の人には使えず、元の資料を知る人にはすぐ分かる。
+Item names and order are the source's, and the field and the narrative both remain. People in other fields cannot use it, and anyone who knows the source recognizes it at once.
 
-**良い例: 原理まで引き上げる**
+**Good: lifted to a principle**
 
-> **要点**: 様式に欄のない情報は、記録されない。残したい情報があるなら、自由記述に任せず、独立した欄として用意する。
+> **Key point**: Information with no field on the form does not get recorded. If there is information you want kept, give it a field of its own instead of leaving it to free text.
 >
-> **原理**: 書く人は欄を埋めることを作業の終わりと受け取る。欄がなければ、その情報を書く理由も、書き漏らしたことに気づくきっかけもない。逆に欄があれば、空欄が「まだ考えていない」ことを示す合図になる。
+> **Principle**: People treat filling in the fields as the end of the task. With no field, there is no reason to write that information and nothing to prompt the writer when it is missing. With a field, a blank becomes a signal that the matter has not been thought about yet.
 >
-> **使いどころ**: 報告書、申請書、議事録、引き継ぎ書など、決まった様式で情報を集めていて、特定の種類の情報がいつも抜ける場合。
+> **When to use**: Reports, applications, minutes, handover notes, anywhere information is collected in a set format and a particular kind keeps going missing.
 >
-> **やり方**: 抜けている情報を具体的に挙げ、それぞれを独立した欄にする。似て非なるもの(直接のきっかけと、背景にある原因など)は、欄を分けて混ざらないようにする。
+> **How**: Name the missing information specifically and give each its own field. Where two things are similar but different (the immediate trigger and the underlying cause), separate the fields so they do not blur.
 >
-> **当てはまらない場合**: 欄を増やすと書く手間が増え、埋めること自体が目的になりやすい。すべての案件に同じ様式を課すと続かない。
+> **When it does not apply**: More fields mean more effort, and filling them in tends to become the goal. Imposing the same form on every case does not last.
 
-障害報告にも、営業の日報にも、引き継ぎ書にも使える。元の資料の項目名も経緯も残っていない。
+It works for incident reports, sales daily reports, and handover notes alike. None of the source's item names or narrative remain.
 
-**悪い例: 上がりすぎ**
+**Bad: lifted too far**
 
-> 記録の様式は目的に合わせて設計する。
+> Design record formats to suit their purpose.
 
-成り立たない場合が言えず、資料がなくても書ける。
+There is no case where it fails to hold, and it could be written without the material.
 
-## ユーザーのコメントがもとになる場合
+## When the user's comment is the basis
 
-主張はユーザーのものなので、勝手に別の水準へ書き換えない。
+The claim is the user's, so do not rewrite it at another level on your own.
 
-- ユーザーの主張(多くは段階1の形をしている)は、そのまま「要点」または「やり方」に残す。
-- そこから読み取れる原理があれば、**提案として**添え、確認の際に「より広く言うとこういう原理だと理解したが、そう書いてよいか」と尋ねる。採否はユーザーが決める。
-- ユーザーが原理を述べておらず、自分でも確信を持って言えない場合は、「原理は未確認(経験則)」と書く。
+- Keep the user's claim (usually in the form of stage 1) as it is, under the key point or the practices.
+- If you can read a principle from it, add it **as a suggestion** and ask at confirmation: "Put more broadly, I understand the principle to be this; may I write it that way?" The user decides.
+- If the user gave no principle and you cannot state one with confidence, write "principle not confirmed (rule of thumb)".
 
-## 裏付けの書き方
+## How to write the evidence
 
-出来事は語らず、裏付けの**種類と数**だけを書く。種類は `basis` に次のいずれかで記す。
+Do not narrate the event. Record only the **kind and count** of evidence. Put the kind in `basis` as one of:
 
-| `basis` | 意味 |
+| `basis` | Meaning |
 |---|---|
-| `結果` | 実際に行われ、結果が確認されている |
-| `見立て` | 当事者や出席者の意見・感想にもとづく。結果は確認されていない |
-| `経験則` | 本人の経験にもとづくが、理由や条件は整理されていない |
+| `result` | It was actually done and the result was confirmed |
+| `opinion` | Based on the views or impressions of those involved or present. The result is not confirmed |
+| `rule-of-thumb` | Based on the person's own experience, with reason and conditions not worked out |
 
-資料に書かれているのが意見や感想だけなら、`見立て` と正直に書く。原理として筋が通って見えても、`結果` にはしない。
+If the material offers only opinions or impressions, say `opinion` honestly. Do not use `result` because the principle looks coherent.

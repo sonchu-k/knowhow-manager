@@ -1,343 +1,347 @@
 # knowhow-manager
 
-外には直接出せない知識から、特定情報だけを取り除いてノウハウとして使える部分を抽出し、保存・検索・利用できるようにするための、生成AI向けスキルセット。
+A set of skills for generative AI that takes knowledge you cannot share as it is, extracts the part that can be used as know-how once the identifying information is removed, and lets you save, search, and use it.
 
-## 目的
+## Purpose
 
-仕事で得た知識の多くは、顧客名、担当者、金額、案件の経緯といった特定情報と結び付いている。議事録や提案書、振り返りメモは、そのままでは社外にも、場合によっては別のチームにも出せない。
+Much of what you learn at work is tied to identifying information: client names, the people involved, amounts, how an engagement unfolded. Minutes, proposals, and retrospective notes cannot leave the company as they are, and sometimes cannot even go to another team.
 
-しかし、その中身のすべてが秘密なわけではない。「なぜうまくいったのか」「どこで判断を誤ったのか」「次はどうすればよいか」という部分は、誰の・どの案件の話かを切り離せば、別の場面でも使える。出せないのは特定情報であって、ノウハウそのものではない。
+Not everything in them is secret, though. "Why did it go well", "where did the judgment go wrong", "what should we do next time" can be used elsewhere once they are separated from whose story and which engagement it was. What cannot be shared is the identifying information, not the know-how itself.
 
-このリポジトリは、その切り離しを生成AIに手伝わせ、取り出したノウハウを蓄積して使い回せるようにする。
+This repository has generative AI help with that separation, and accumulates the know-how so that it can be reused.
 
-| やること | 内容 |
+| What it does | Details |
 |---|---|
-| 抽出 | 資料や自分のコメントから特定情報を取り除き、別の場面でも成り立つ形に引き上げてノウハウにする。保存の前に下書きの全文を示し、確認を受ける |
-| 保存 | 1ノウハウ1ファイルで、カテゴリと目次を付けて蓄積する。元の資料は保存しない |
-| 検索 | 状況や質問を伝えると、当てはまるノウハウを出典付きで示す |
-| 利用 | 見つかったノウハウを、いまの状況にどう当てはまるか、どこが当てはまらないかとあわせて示す |
-| 規定の確認 | 守秘義務契約や社内規程に照らして、いまの設定と運用が対応できているかを判定する |
+| Extract | Removes identifying information from material or from your own comments, lifts it to a form that holds in other settings, and turns it into know-how. The full draft is shown for confirmation before anything is saved |
+| Save | One file per know-how item, with categories and an index. The source material is not saved |
+| Search | Describe a situation or ask a question, and the applicable know-how is presented with its source |
+| Use | Presents what was found together with how it applies to the current situation and where it does not |
+| Policy check | Judges whether the current settings and practice comply with a confidentiality agreement or internal regulation |
 
-元の資料は手元(git 管理外)に置いたままにし、リポジトリに残るのは特定情報を除いたノウハウだけである。どこまで抽象化するかは3段階で設定できる。
+Source material stays on your machine (untracked by git); only know-how with the identifying information removed remains in the repository. How far to abstract can be set at one of three levels.
 
-## スキル
+## Skills
 
-| スキル | 役割 | 依頼の例 |
+| Skill | Role | Example request |
 |---|---|---|
-| `extract-knowhow` | 資料や自分のコメントからノウハウを作って保存する | 「inbox の議事録からノウハウを抽出して」「これをノウハウとして残して: …」 |
-| `search-knowhow` | 蓄積されたノウハウを検索・参照する | 「見積もりに関するノウハウある?」 |
-| `check-policy` | 守秘義務契約や社内規程に照らして、設定と運用が対応できているかを判定する | 「この契約で今の設定は大丈夫か確認して」 |
+| `extract-knowhow` | Creates know-how from material or your own comments and saves it | "Extract know-how from the minutes in inbox" / "Save this as know-how: …" |
+| `search-knowhow` | Searches and references accumulated know-how | "Do we have any know-how on quoting?" |
+| `check-policy` | Judges whether the settings and practice comply with a confidentiality agreement or internal regulation | "Check whether my current setup is OK under this agreement" |
 
-## 目次
+The skills work in your language: they reply, and write know-how, in the language you use.
 
-- [目的](#目的)
-- [スキル](#スキル)
-- [はじめに(初回のみ)](#はじめに初回のみ)
-- [ノウハウを抽出する](#ノウハウを抽出する)
-- [自分のコメントをもとにノウハウを残す](#自分のコメントをもとにノウハウを残す)
-- [抽象化の度合い](#抽象化の度合い)
-- [ノウハウを検索・参照する](#ノウハウを検索参照する)
-- [規定に照らして確認する](#規定に照らして確認する)
-- [設定ファイル](#設定ファイル)
-- [特定情報のチェック](#特定情報のチェック)
-- [チャット(claude.ai など)で使う](#チャットclaudeai-などで使う)
-- [構成](#構成)
-- [困ったとき](#困ったとき)
-- [ライセンス](#ライセンス)
+## Contents
 
-## はじめに(初回のみ)
+- [Purpose](#purpose)
+- [Skills](#skills)
+- [Getting started (first time only)](#getting-started-first-time-only)
+- [Extracting know-how](#extracting-know-how)
+- [Keeping know-how based on your own comments](#keeping-know-how-based-on-your-own-comments)
+- [Abstraction level](#abstraction-level)
+- [Searching and referencing know-how](#searching-and-referencing-know-how)
+- [Checking against a policy](#checking-against-a-policy)
+- [Config file](#config-file)
+- [Checks for identifying information](#checks-for-identifying-information)
+- [Using it in chat (claude.ai and similar)](#using-it-in-chat-claudeai-and-similar)
+- [Layout](#layout)
+- [Troubleshooting](#troubleshooting)
+- [License](#license)
 
-必要なもの: [Claude Code](https://claude.com/claude-code)、git、Python 3.9 以上(追加のライブラリは不要)。
+## Getting started (first time only)
+
+You need [Claude Code](https://claude.com/claude-code), git, and Python 3.9 or later (no extra libraries).
 
 ```bash
 git clone https://github.com/sonchu-k/knowhow-manager.git
 cd knowhow-manager
 
-# 1. コミット前チェックを有効にする
+# 1. Enable the pre-commit check
 git config core.hooksPath .githooks
 
-# 2. 検出したい固有名詞のリストを作る
+# 2. Create the list of proper nouns to detect
 cp .sensitive-terms.example.txt .sensitive-terms.txt
 ```
 
-`.sensitive-terms.txt` には、ノウハウに残ってはいけない固有名詞を1行に1語で書く。自社名とその略称、主要な顧客名、社内のプロジェクト名や製品名などを入れておくと、機械チェックで確実に止められる。このファイルは git 管理外なので、中身が共有されることはない。
+In `.sensitive-terms.txt`, list the proper nouns that must not remain in know-how, one per line. Putting in your company's name and its short forms, key client names, and internal project and product names lets the mechanical check stop them reliably. The file is untracked by git, so its contents are never shared.
 
-ノウハウの保存先や抽象化の度合いを変えたい場合は、[設定ファイル](#設定ファイル)を先に済ませる。
+To change where know-how is saved or how far it is abstracted, set up the [config file](#config-file) first.
 
-## ノウハウを抽出する
+## Extracting know-how
 
-### 1. 資料を置く
+### 1. Place the material
 
-元資料フォルダ(既定では `inbox/`)に資料を置く。このフォルダは git 管理外で、コミット前フックでもコミットが拒否される。
+Put the material in the inbox folder (`inbox/` by default). The folder is untracked by git, and the pre-commit hook also refuses to commit it.
 
-資料を置かずに、Claude Code へ直接貼り付けたり、ファイルのパスを伝えたりしてもよい。
+You can also paste the material straight into Claude Code or give it a file path.
 
-### 2. 依頼する
+### 2. Ask
 
-このリポジトリで Claude Code を開いて依頼する。
-
-```
-inbox/ の議事録からノウハウを抽出して
-```
+Open Claude Code in this repository and ask.
 
 ```
-この振り返りメモから学びを残して(続けて本文を貼り付ける)
+Extract know-how from the minutes in inbox/
 ```
 
-スキルは次の順に作業する。
+```
+Capture the lessons from this retrospective (then paste the text)
+```
 
-1. 資料を読み、特定情報(人名、社名、金額、日付、場所など)を洗い出す
-2. うまくいったやり方、失敗とその原因、判断の基準などを候補として拾う
-3. 候補を、設定された[抽象化の度合い](#抽象化の度合い)に合わせて引き上げる。既定(`high`)では原理まで引き上げ、同じ原理に行き着くものをまとめて、自分の言葉と構成で書く
-4. 元を突き止めようとする人の立場で読み直し、機械チェックもかける
-5. 既存のノウハウと突き合わせ、新規の追加か、既存ファイルの更新かを決める
-6. 下書きの全文を示して、保存してよいかを尋ねる
+The skill works in this order.
 
-この時点では、まだ何も保存されていない。下書きは `<元資料フォルダ>/_drafts/` に置かれる(git 管理外)。
+1. Reads the material and identifies the identifying information (names, companies, amounts, dates, places)
+2. Collects candidates: approaches that worked, failures and their causes, decision criteria
+3. Lifts the candidates to the configured [abstraction level](#abstraction-level). At the default (`high`) it lifts them to principles, merges the ones that come down to the same principle, and writes in its own words and structure
+4. Rereads as someone trying to trace the text back to its source, and runs the mechanical check
+5. Compares with existing know-how and decides whether each item is new or an update to an existing file
+6. Shows the full drafts and asks whether to save
 
-資料によっては「抽出なし」になることもある。事実の記録だけの資料や、特定情報を消すと中身が残らない資料からは、無理に作らない。
+Nothing has been saved at this point. Drafts are kept in `<inbox folder>/_drafts/` (untracked by git).
 
-### 3. 内容を確認して答える
+Some material yields "nothing extracted". Material that is only a record of facts, or that has nothing left once the identifying information is removed, is not forced into know-how.
 
-示された下書きを読み、次の点を確認する。
+### 3. Check the content and answer
 
-- 元の企業・人・案件を推測できる記述が残っていないか
-- 元の資料を知らない人が読んで、行動を変えられる内容になっているか
+Read the drafts and check:
 
-下書きと一緒に、次のものも示される。
+- that nothing remains from which the original company, person, or engagement could be guessed
+- that someone who does not know the source could read it and act differently
 
-- 使った抽象化の度合いと、どんな内容からどういう原理として引き上げたか
-- 保存先と、新規か既存の更新か(更新なら何が変わるか)
-- 取り除いた情報の種類
-- 資料に書かれておらず、スキルが推論で補った部分(原理の説明や「当てはまらない場合」など)
-- 判断に迷った点と、ノウハウにしなかった候補
+Along with the drafts you are shown:
 
-機械チェックで拾えるのは形式的なパターンと登録語だけで、特定されないかを最終的に判断できるのは元の案件を知っている人だけなので、ここは省略しない。
+- the abstraction level used, and what kind of content was lifted to what principle
+- where each will be saved, and whether it is new or an update (and what changes, for an update)
+- the kinds of information removed
+- the parts the material does not state and the skill reasoned out (the explanation of the principle, "when it does not apply", and so on)
+- points the skill was unsure about, and candidates it did not turn into know-how
 
-- **問題なければ**「問題ない」「保存して」と答える。ノウハウフォルダ(既定では `knowhow/`)に保存され、目次が更新される。
-- **問題があれば**、どこをどう直すかを伝える。修正後の全文と変更点が示され、もう一度確認を求められる。問題ないと答えるまで保存されない。
+The mechanical check only catches formal patterns and registered terms, and only someone who knows the original engagement can finally judge whether something is identifiable, so do not skip this.
+
+- **If it is fine**, answer "fine" or "save it". The know-how is saved in the know-how folder (`knowhow/` by default) and the index is updated.
+- **If something is wrong**, say where and how to change it. You are shown the revised full text and what changed, and asked again. Nothing is saved until you say it is fine.
 
   ```
-  2番の「十数名の部門」は特定できるので落として。3番は保存しなくていい。1番はそのままでOK
+  In no. 2, "a department of a dozen or so people" is identifiable, drop it. Don't save no. 3. No. 1 is fine as it is.
   ```
 
-一部だけ承認する、保存をやめる、という答え方もできる。
+You can also approve only some, or decide not to save.
 
-### 4. コミットする
+### 4. Commit
 
 ```bash
 git add knowhow/
-git commit -m "ノウハウを追加"
+git commit -m "Add know-how"
 ```
 
-### ノウハウファイルの形
+### What a know-how file looks like
 
-1ノウハウ = 1原理 = 1ファイルで、`<ノウハウフォルダ>/<カテゴリ>/<タイトル>.md` に保存される。目次は `INDEX.md`。
+One know-how = one principle = one file, saved as `<know-how folder>/<category>/<title>.md`. The index is `INDEX.md`.
 
 ```markdown
 ---
-title: 決めてもらいたいときは選択肢を並べて判断の種類を変える
-category: 提案・合意形成
-tags: [合意形成, 選択肢, 提示の仕方]
-source_type: 文書
-basis: 結果
+title: When you want a decision, lay out options to change the kind of decision
+category: Proposals and agreement
+tags: [agreement, options, presentation]
+source_type: [document]
+basis: result
 abstraction: high
 created: 2026-10-08
 updated: 2026-10-08
 evidence_count: 1
 ---
 
-# 決めてもらいたいときは選択肢を並べて判断の種類を変える
+# When you want a decision, lay out options to change the kind of decision
 
-## 要点
-## 原理
-## 使いどころ
-## やり方
-## 当てはまらない場合
-## 裏付け
+## Key point
+## Principle
+## When to use
+## How
+## When it does not apply
+## Evidence
 ```
 
-- `basis` は裏付けの種類。`結果`(実際に行われ結果が確認された)、`見立て`(意見・感想にもとづき結果は未確認)、`経験則`(本人の経験で理由や条件は未整理)。
-- `evidence_count` は、そのノウハウを裏付けた、互いに独立した資料・機会の数。1つの資料は、事例がいくつ含まれていても1と数える。1のものは「一度そうだった」に過ぎないと読む。
-- `abstraction` は、そのノウハウを書いたときの抽象化の度合い。
-- `source_type` は `文書`、`会議・会話の記録`、`本人のコメント` の大まかな区分だけを書く。
+- `basis` is the kind of evidence: `result` (done and the result confirmed), `opinion` (based on views or impressions; result not confirmed), `rule-of-thumb` (the person's experience; reason and conditions not worked out).
+- `evidence_count` is the number of mutually independent documents or occasions that support the know-how. One document counts as one however many cases it contains. Read 1 as "it was so once".
+- `abstraction` is the abstraction level the know-how was written at.
+- `source_type` holds only a broad class: `document`, `meeting-or-conversation`, `own-comment`.
+- The title, body, and section headings are written in your language. Frontmatter keys and the fixed values above stay in English.
 
-## 自分のコメントをもとにノウハウを残す
+## Keeping know-how based on your own comments
 
-ノウハウの中身を生成AIに考えさせるのではなく、自分の考えや経験をもとに残すこともできる。
+Instead of having generative AI work out the content, you can keep know-how based on your own thinking and experience.
 
-**資料なしで、コメントだけから残す**
-
-```
-これをノウハウとして残して: 見積もりは必ず3案出す。1案だけだと受けるか断るかの話になって、金額で揉めるとそのまま流れる
-```
-
-**資料に自分の見立てや観点を添える**
+**From a comment alone, with no document**
 
 ```
-inbox/ の振り返りメモについて。一番の学びは、要件を決める前に現場を見に行かなかったことだと思う。それをノウハウにして
+Save this as know-how: always present three quotes. With only one it becomes accept-or-refuse, and if the price is a sticking point the deal just dies
+```
+
+**Adding your own reading or angle to a document**
+
+```
+About the retrospective in inbox/: I think the main lesson is that we never visited the site before fixing the requirements. Turn that into know-how
 ```
 
 ```
-この議事録から、価格交渉に関することだけ抽出して
+From these minutes, extract only the points about price negotiation
 ```
 
-**作業中のやり取りから残す**
+**From the exchange during work**
 
 ```
-今の指摘をノウハウにして
+Turn that last point into know-how
 ```
 
-この場合、スキルは述べられた主張を整理して書式に落とす役に回る。
+In these cases the skill takes the role of organizing the stated claim and putting it into the format.
 
-- 主張を別の内容や一般論に差し替えない。読み取れる原理は提案として添えられ、採否を尋ねられる。
-- 述べていない理由や条件を推測で埋めない。分からない項目は「未確認」と書かれ、確認の際に尋ねられる。分からなければ、そのまま保存できる。
-- 観点を指定した場合はその範囲に絞る。資料にほかの有用な点があれば、残すかどうかを尋ねられる。
-- 見立てと資料の内容が食い違う場合は、その旨が伝えられる。
+- It does not swap the claim for something else or for a generality. Any principle it can read from the claim is added as a suggestion, and you are asked whether to adopt it.
+- It does not fill in unstated reasons or conditions by guessing. Unknown items are written as "not confirmed" and asked about at confirmation. If you do not know, they can be saved as they are.
+- If you name an angle, it stays within it. If the document holds other useful points, you are asked whether to keep them.
+- If your reading and the document disagree, you are told.
 
-特定情報の除去と保存前の確認は、資料から抽出する場合と同じように行われる。確認の際には、自分が述べた内容とスキルが補った内容が区別して示される。
+Removing identifying information and confirming before saving work the same as when extracting from a document. At confirmation, what you said and what the skill added are shown separately.
 
-## 抽象化の度合い
+## Abstraction level
 
-固有名詞を消しただけの文章は「誰の話か分からない出来事の記録」で、別の分野では使いにくく、構成や言い回しから出どころも分かってしまう。このスキルは、出来事からノウハウを取り出す際に、どこまで抽象化するかを選べる。
+Text with only the proper nouns removed is "a record of an event whose owner is unknown": hard to use in another field, and its structure and wording still show where it came from. When taking know-how out of an event, this skill lets you choose how far to abstract.
 
-### 抽象の4つの段階
+### Four stages of abstraction
 
-| 段階 | 中身 | 例 |
+| Stage | Content | Example |
 |---|---|---|
-| 出来事 | 誰が何をしてどうなったか | 初回の見積もりに難色を示されたが、3案を並べたら真ん中で合意できた |
-| その場の教訓 | 同じ場面でどうするか | 見積もりは3案出す |
-| 原理 | なぜそうなるのか | 選択肢が1つだと判断は「受けるか断るか」になり、複数あると「どれを選ぶか」になる |
-| 一般論 | 何にでも言えること | 相手の立場に立って提案する |
+| Event | Who did what and what happened | The first quote met resistance, but when three plans were presented side by side they agreed on the middle one |
+| Lesson from that setting | What to do in the same setting | Present three quotes |
+| Principle | Why it happens | With one option the decision is "accept or refuse"; with several it becomes "which one" |
+| Platitude | Something true of anything | Make proposals from the other party's point of view |
 
-出来事はそのままでは残さず、一般論にもしない。その間のどこを中心に置くかを、設定で決める。
+Events are not kept as they are, and nothing is turned into a platitude. The setting decides where in between the center sits.
 
-### 3段階の設定
+### The three levels
 
-`knowhow.config.json` の `abstraction_level` で選ぶ。既定は `high`(最大)。
+Choose with `abstraction_level` in `knowhow.config.json`. The default is `high` (maximum).
 
-| | `low` 具体 | `medium` 分野内の一般化 | `high` 原理(最大) |
+| | `low` concrete | `medium` generalized within the field | `high` principle (maximum) |
 |---|---|---|---|
-| 残るもの | 具体的な教訓と手順。様式や項目の列挙も残る | その分野で通用する方法と理由 | 分野をまたいで成り立つ原理 |
-| 例 | 見積もりは松竹梅の3案を並べて出す。真ん中に通したい案を置く | 見積もりは複数案を並べて出す。1案だと金額への抵抗がそのまま拒否になる | 選択肢が1つだと判断は「受けるか断るか」になり、複数あると「どれを選ぶか」になる |
-| 分野の言葉 | 使う | 使う | 使わない |
-| 数値 | 丸めて残してよい | 理由の説明に必要なものだけ | 原理に関係なければ書かない |
-| 1資料から残る件数 | 数件〜 | 2〜4件 | 1〜3件 |
-| 元を突き止められる可能性 | 高い | 中程度 | 低い |
-| 向いている使い方 | 同じ業務を繰り返すチーム内の手順集。元が公開資料の場合 | 同じ職種・分野の中での共有 | 分野をまたぐ共有。出どころを伏せたい場合 |
+| What remains | Concrete lessons and steps. Forms and item lists remain too | Methods and reasons that work in that field | Principles that hold across fields |
+| Example | Present three quotes, good / better / best, with the one you want chosen in the middle | Present several quotes side by side. With one, resistance to the price becomes refusal | With one option the decision is "accept or refuse"; with several it becomes "which one" |
+| Field vocabulary | Used | Used | Not used |
+| Numbers | May stay, rounded | Only those needed to explain the reason | Left out unless the principle depends on them |
+| Items kept per document | Several or more | Two to four | One to three |
+| Chance of being traced back | High | Medium | Low |
+| Suited to | A procedure collection for a team that repeats the same work; public source material | Sharing within the same profession or field | Sharing across fields; when the origin must not show |
 
-どの度合いでも、固有名詞の除去、機械チェック、保存前の確認は同じように行われる。使われた度合いは、各ノウハウの `abstraction` に記録される。
+At every level, proper nouns are removed, the mechanical check runs, and you confirm before saving. The level used is recorded in each know-how item's `abstraction` field.
 
-### `high` での書き方
+### How `high` is written
 
-- ノウハウの中心は原理に置かれ、その場の教訓は「やり方」の一つとして添えられる。
-- 元の資料の項目名・並び順・造語・数値・言い回し・経緯は持ち込まれない。
-- 「やり方」には、原理から導ける項目だけが書かれる。
-- 同じ原理に行き着く候補は1件にまとめられる。
-- 原理の説明や「当てはまらない場合」は、資料に書かれていないことが多く、スキルが推論で補う。確認の際に、資料にもとづく部分と区別して示される。
+- The principle sits at the center; the lesson from that setting is added as one of the practices.
+- The source's item names, ordering, coined terms, numbers, wording, and narrative are not carried over.
+- Only practices that follow from the principle are listed.
+- Candidates that come down to the same principle are merged into one item.
+- The explanation of the principle and "when it does not apply" are often not in the material and are reasoned out by the skill. At confirmation they are shown separately from what rests on the material.
 
-### 度合いを変える
+### Changing the level
 
-- **設定を変える**: `knowhow.config.json`(自分の環境だけなら `knowhow.config.local.json`)の `abstraction_level` を書き換える。
-- **一度だけ変える**: 依頼の中で指定する。設定より優先される。
+- **Change the setting**: edit `abstraction_level` in `knowhow.config.json` (or `knowhow.config.local.json` for your own machine only).
+- **Change it once**: name it in the request. It takes precedence over the setting.
 
   ```
-  inbox/ の手順メモからノウハウを抽出して。抽象度は low で
+  Extract know-how from the procedure notes in inbox/. Use abstraction level low
   ```
 
-- **確認の際に調整する**: 引き上げすぎ(一般論)や引き上げ不足(出来事のまま)だと感じたら、そう伝えて直してもらう。
+- **Adjust at confirmation**: if a draft seems lifted too far (a platitude) or not far enough (still the event), say so and have it revised.
 
-### 選ぶときの注意
+### Choosing a level
 
-`low` と `medium` は、構成や言い回しが元の資料に近くなるぶん、元の資料を知る人には出どころが分かりやすい。非公開の資料には `high` を勧める。`high` でも完全ではない点は、[限界](#限界)を参照。
+At `low` and `medium`, structure and wording stay closer to the source, so someone who knows the source can recognize the origin more easily. `high` is recommended for non-public material. For the ways in which even `high` is not complete, see [Limits](#limits).
 
-## ノウハウを検索・参照する
+## Searching and referencing know-how
 
-状況や質問をそのまま伝える。
-
-```
-来週、初めての顧客に見積もりを出す。関係するノウハウある?
-```
+Describe the situation or ask the question as it is.
 
 ```
-顧客の返事が遅くてプロジェクトが進まない。過去に似た知見はある?
+Next week I'm sending a quote to a new client. Any relevant know-how?
 ```
 
 ```
-データ移行のノウハウを踏まえて、この移行計画をレビューして
-```
-
-スキルは目次と本文を、言い換えも含めて検索し、当てはまるものを出典リンク付きで返す。
-
-- 蓄積にある内容と、一般的な知識による補足は分けて示される。
-- 裏付けが1件だけのもの、裏付けが意見や経験則にとどまるもの、前提が部分的にしか合わないものは、その旨が添えられる。
-- ノウハウは原理として書かれているので、質問と分野が違っていても、同じ原理が働く場面なら候補に挙がる。
-- 該当するものがなければ「該当なし」と、探した観点とともに返される。
-
-検索だけではノウハウは書き換えられない。「このノウハウを試したらうまくいった/いかなかった」と伝えると、該当ファイルの更新が提案される。
-
-## 規定に照らして確認する
-
-守秘義務契約、社内規程、生成AIの利用ルールなどを渡すと、いまの設定と運用がその規定に対応できているかを条項ごとに判定し、理由と対応案を示す。
-
-### 使い方
-
-規定の文書を規定フォルダ(既定では `policies/`、git 管理外)に置くか、直接貼り付けて依頼する。
-
-```
-policies/ の秘密保持契約に照らして、今の設定で大丈夫か確認して
+The client is slow to reply and the project is stuck. Have we learned anything similar before?
 ```
 
 ```
-この社内規程だと、議事録をノウハウにしてよい?(続けて本文を貼り付ける)
+Review this migration plan in light of our know-how on data migration
 ```
 
-### 何を突き合わせるか
+The skill searches the index and the body text, including rewordings, and returns what applies with links to the source files.
 
-ノウハウ管理を4つの段階に分け、規定の条項がどの段階に関わるかを見る。
+- What is in the store and any addition from general knowledge are shown separately.
+- Items supported by a single case, items whose evidence is only an opinion or rule of thumb, and items whose premises fit only in part are marked as such.
+- Know-how is written as principles, so an item can be a candidate even when its field differs from the question, as long as the same principle operates.
+- If nothing applies, "nothing found" is returned with the angles that were searched.
 
-| 段階 | 起きること | 関わる設定・事実 |
+Searching alone does not change any know-how. If you say "I tried this know-how and it worked / did not work", an update to the file is suggested.
+
+## Checking against a policy
+
+Hand over a confidentiality agreement, internal regulation, generative-AI usage rule, or similar, and the skill judges clause by clause whether the current settings and practice comply, with reasons and options.
+
+### How to use it
+
+Put the policy document in the policy folder (`policies/` by default, untracked by git) or paste it, and ask.
+
+```
+Check whether my current setup is OK under the non-disclosure agreement in policies/
+```
+
+```
+Under this internal regulation, may I turn minutes into know-how? (then paste the text)
+```
+
+### What is compared
+
+Know-how management is divided into four stages, and each clause is matched to the stages it touches.
+
+| Stage | What happens | Related settings and facts |
 |---|---|---|
-| A. 保管 | 元の資料を手元に置く | 元資料フォルダの場所、クラウド同期の有無、処理後に残っているファイル |
-| B. 入力 | 元の資料を生成AIサービスに読ませる | 使っているサービスと契約条件(設定からは分からないので尋ねられる) |
-| C. 蓄積 | 抽象化したノウハウを保存する | `abstraction_level`、ノウハウフォルダの場所、リモートリポジトリ、登録語、フック |
-| D. 利用 | ノウハウを別の場面・別の組織の仕事で使う | `abstraction_level`、保存済みノウハウの度合い |
+| A. Storage | Source material is kept locally | Location of the inbox folder, cloud sync, files left after processing |
+| B. Input | Source material is read by a generative-AI service | The service used and its contract terms (not knowable from the settings, so you are asked) |
+| C. Accumulation | Abstracted know-how is saved | `abstraction_level`, location of the know-how folder, remote repository, registered terms, the hook |
+| D. Use | Know-how is used in another setting or in work for another organization | `abstraction_level`, the level of the know-how already saved |
 
-設定と保管の状況は、次のコマンドで集められる(スキルが自動で実行する)。
+The settings and storage state can be gathered with this command (the skill runs it itself).
 
 ```bash
 python3 .claude/skills/check-policy/scripts/policy_facts.py
 ```
 
-### 結果の読み方
+### Reading the result
 
-条項ごとに、根拠となる条項番号と理由を添えて、次のいずれかが付く。
+Each clause gets one of the following, with the clause number and the reason.
 
-| 判定 | 意味 |
+| Judgment | Meaning |
 |---|---|
-| 対応している | 条項が求めることを、いまの設定・運用で満たしていると言える |
-| 対応していない | いまの設定・運用では満たしていない |
-| 判断できない | 条項の文言からは決められない、規定の一部が手元にない、または必要な事実が分からない |
+| Compliant | What the clause requires is met by the current settings and practice |
+| Not compliant | The current settings and practice do not meet it |
+| Cannot determine | The wording does not settle it, part of the policy is missing, or a needed fact is unknown |
 
-総合判定は「対応している」「条件付き」「対応していない」の3つで、対応案は次の3種類に分けて示される。
+The overall judgment is "compliant", "conditional", or "not compliant", and the options are presented in three groups.
 
-1. 設定の変更で対応できること(`abstraction_level` を上げる、保管場所を変える、など)
-2. 運用の変更で対応できること(特定の資料は入力しない、処理後に元資料を削除する、など)
-3. 確認が必要なこと(誰に何を尋ねるか)
+1. What a settings change can address (raising `abstraction_level`, moving storage, and so on)
+2. What a change in practice can address (not entering certain material, deleting source material after processing, and so on)
+3. What needs to be confirmed (who to ask and what)
 
-設定ファイルは、同意するまで書き換えられない。
+The config file is not edited until you agree.
 
-### 知っておくこと
+### Things to know
 
-- **法的な判断ではない。** 見落としを減らすための下調べである。迷う条項は「対応している」ではなく「判断できない」になる。最終的な判断は、本人と各社の法務・事務局が行う。
-- **抽象化では対応できない段階がある。** 元の資料は、抽象化する前の形で生成AIサービスに送られる(段階B)。外部サービスへの入力を禁じる規定には、`abstraction_level` をどう設定しても対応できない。
-- **固有名詞を消しても秘密情報でなくなるとは限らない。** 派生物や分析結果を秘密情報に含める規定では、原理まで引き上げたノウハウも対象になりうる。
-- **規定が複数ある場合**は、規定ごとに判定される。設定は共通なので、最も厳しい規定に合わせることになる。
-- 規定の文書そのものも外に出せないので、規定フォルダは git 管理外で、コミット前フックでも拒否される。
+- **It is not a legal judgment.** It is groundwork to reduce oversights. A clause in doubt becomes "cannot determine", not "compliant". The final decision rests with you and each organization's legal or secretariat function.
+- **Some stages cannot be addressed by abstraction.** Source material is sent to the generative-AI service in its form before abstraction (stage B). No value of `abstraction_level` addresses a policy that prohibits entering material into external services.
+- **Removing proper nouns does not necessarily stop something being confidential information.** Under a policy that includes derivatives and analyses in confidential information, know-how lifted to a principle may still be covered.
+- **Reading the policy is itself an input.** The policy document may be confidential under its own terms; the report says that it was read with generative AI and that this was not judged.
+- **With several policies**, each is judged separately. The settings are shared, so they have to meet the strictest one.
+- The policy documents cannot be shared either, so the policy folder is untracked by git and rejected by the pre-commit hook.
 
-## 設定ファイル
+## Config file
 
-ノウハウの保存先、元資料の置き場、規定の置き場、抽象化の度合いは `knowhow.config.json` で指定する。
+Where know-how is saved, where source material and policies are placed, and the abstraction level are set in `knowhow.config.json`.
 
 ```json
 {
@@ -349,82 +353,84 @@ python3 .claude/skills/check-policy/scripts/policy_facts.py
 }
 ```
 
-| キー | 意味 | 既定値 |
+| Key | Meaning | Default |
 |---|---|---|
-| `knowhow_dir` | ノウハウの保存先。目次の `INDEX.md` もここに置かれる | `knowhow` |
-| `inbox_dir` | 処理前の元資料の置き場 | `inbox` |
-| `sensitive_terms_file` | 検出したい固有名詞のリスト | `.sensitive-terms.txt` |
-| `policies_dir` | 守秘義務契約や社内規程の置き場 | `policies` |
-| `abstraction_level` | 抽象化の度合い(`low` / `medium` / `high`)。[抽象化の度合い](#抽象化の度合い)を参照 | `high` |
+| `knowhow_dir` | Where know-how is saved. The index `INDEX.md` lives here too | `knowhow` |
+| `inbox_dir` | Where unprocessed source material is placed | `inbox` |
+| `sensitive_terms_file` | List of proper nouns to detect | `.sensitive-terms.txt` |
+| `policies_dir` | Where confidentiality agreements and internal regulations are placed | `policies` |
+| `abstraction_level` | Abstraction level (`low` / `medium` / `high`). See [Abstraction level](#abstraction-level) | `high` |
 
-- 相対パスは設定ファイルのあるフォルダが基準。絶対パスや `~` も使えるので、リポジトリの外(Obsidian の保管庫など)も指定できる。
-- 書かなかったキーは既定値になる。
-- 知らないキーや、`abstraction_level` に3つ以外の値を書くと、設定エラーになる。
+- Relative paths are resolved from the folder holding the config file. Absolute paths and `~` also work, so locations outside the repository (an Obsidian vault, for example) can be used.
+- Keys you leave out take their defaults.
+- An unknown key, or an `abstraction_level` other than the three values, is a config error.
 
-### 自分の環境だけ変える
+### Changing settings for your machine only
 
-同じ形式の `knowhow.config.local.json` を作ると、書いたキーだけが上書きされる。このファイルは git 管理外。
+Create `knowhow.config.local.json` in the same format; only the keys you write are overridden. The file is untracked by git.
 
 ```json
 {
-  "knowhow_dir": "~/Documents/vault/ノウハウ",
-  "inbox_dir": "~/Documents/vault/_元資料"
+  "knowhow_dir": "~/Documents/vault/knowhow",
+  "inbox_dir": "~/Documents/vault/_sources"
 }
 ```
 
-### 変更したあとに確認する
+### Checking after a change
 
 ```bash
 python3 .claude/skills/extract-knowhow/scripts/check_sensitive.py --show-config
 ```
 
-解決後のパスと、抽象化の度合いが表示される。存在しないフォルダには「※存在しません」と付き、元資料フォルダや規定フォルダが git 管理対象になっている場合は警告が出る。
+The resolved paths and the abstraction level are shown. Folders that do not exist are marked "(does not exist)", and a warning appears if the inbox folder or the policy folder is tracked by git.
 
-### 変更するときの注意
+### Cautions when changing
 
-- `inbox_dir` や `policies_dir` をリポジトリ内の別フォルダに変えたときは、`.gitignore` にもそのフォルダを追加する。
-- `knowhow_dir` をリポジトリの外にすると、このリポジトリのコミット前フックは効かない。機械チェックは手動で実行する。
-- 既存のノウハウは自動では移動しない。フォルダを変えるときは、`INDEX.md` ごと自分で移す。
+- If you move `inbox_dir` or `policies_dir` to another folder inside the repository, add that folder to `.gitignore` as well.
+- If `knowhow_dir` is outside the repository, this repository's pre-commit hook does not cover it. Run the mechanical check by hand.
+- Existing know-how is not moved automatically. When changing the folder, move it yourself together with `INDEX.md`.
 
-## 特定情報のチェック
+## Checks for identifying information
 
-特定情報を残さないために、5つの仕組みを重ねている。
+Five safeguards are layered to keep identifying information out.
 
-1. **固有名詞の除去**: 抽出前に特定情報を洗い出し、役割や性質に置き換える。
-2. **概念への引き上げ**: 出来事の形(構成、言い回し、経緯)を残さず、原理から書き直す。書いたあと、元を突き止めようとする人の立場で読み直す。度合いは[設定](#抽象化の度合い)による。
-3. **機械チェック**: 形式的なパターンと登録語を検出する。
-4. **保存前の確認**: 下書きの全文をユーザーが読み、問題ないと答えるまで保存しない。
-5. **コミット前フック**: ノウハウフォルダの変更に機械チェックをかけ、元資料フォルダと規定フォルダのファイルのコミットを拒否する。
+1. **Removing proper nouns**: identifying information is identified before extraction and replaced with roles and descriptions.
+2. **Lifting to a concept**: the shape of the event (structure, wording, narrative) is not kept; the text is rewritten from the principle and then reread as someone trying to trace it back. How far depends on the [setting](#abstraction-level).
+3. **Mechanical check**: detects formal patterns and registered terms.
+4. **Confirmation before saving**: you read the full draft, and nothing is saved until you say it is fine.
+5. **Pre-commit hook**: runs the mechanical check on changes to the know-how folder and refuses to commit files in the inbox folder or the policy folder.
 
-### 機械チェックが検出するもの
+### What the mechanical check detects
 
-| 区分 | 対象 | 扱い |
+| Class | Target | Handling |
 |---|---|---|
-| エラー | メールアドレス、電話番号、郵便番号、IPアドレス、登録語 | 解消するまでコミットできない |
-| 警告 | 法人格(株式会社など)、URL、敬称付きの名前 | 内容を見て判断する。コミットは止まらない |
+| Error | Email addresses, phone numbers, postal codes, IP addresses, registered terms | The commit is blocked until resolved |
+| Warning | Corporate suffixes (株式会社, Inc., and so on), URLs, names with honorifics | Look and decide. The commit is not blocked |
 
-### 手動で実行する
+The phone number, postal code, and honorific patterns target Japanese text. For other languages, rely on registered terms.
+
+### Running it by hand
 
 ```bash
 S=.claude/skills/extract-knowhow/scripts/check_sensitive.py
 
-python3 $S                    # ノウハウフォルダ全体
-python3 $S path/to/file.md    # 特定のファイルやフォルダ
-python3 $S --strict           # 警告もエラーとして扱う
-python3 $S --show-config      # 設定を確認
+python3 $S                    # the whole know-how folder
+python3 $S path/to/file.md    # a particular file or folder
+python3 $S --strict           # treat warnings as errors
+python3 $S --show-config      # show the settings
 ```
 
-終了コードは、0 = 問題なし、1 = 特定情報の疑いあり、2 = 設定や引数の誤り。
+Exit codes: 0 = clean, 1 = possible identifying information, 2 = bad settings or arguments.
 
-### 限界
+### Limits
 
-- **機械チェック**は、文脈から特定できる記述(業界・地域・規模・時期の組み合わせなど)や、登録していない固有名詞を検出できない。通過しても安全とは限らないので、保存前の確認と組み合わせて使う。新しい固有名詞が資料に出てきたら、`.sensitive-terms.txt` に追加していく。よくある姓のような語を登録すると、無関係な文脈でもエラーになる。
-- **固有名詞を消すだけでは足りない。** 公開資料で試したところ、固有名詞をすべて取り除いても、項目名や並び順、珍しい言い回し、本筋でない数値が残っていると、検索で元の文書が見つかった。`high` はこれらを持ち込まない書き方をする。
-- **`high` でも完全ではない。** 同じ資料から複数のノウハウを残すと、論点の組み合わせから元の資料を絞り込めることがある。元が公開資料の場合は検索で見つかる可能性が残り、非公開の資料でも、それを読んだ関係者には見当がつくことがある。残す件数を絞ると見つかりにくくなる。
+- **The mechanical check** cannot detect what is identifiable from context (a combination of industry, region, size, and timing) or proper nouns that are not registered. Passing it does not mean safe, so use it together with confirmation before saving. Add new proper nouns to `.sensitive-terms.txt` as they come up. Registering a word like a common surname raises errors in unrelated contexts too.
+- **Removing proper nouns is not enough.** In a trial with public material, with every proper noun removed, the original documents were still found by searching when item names, ordering, unusual phrases, and incidental numbers remained. `high` is written so as not to carry these over.
+- **Even `high` is not complete.** When several know-how items are kept from the same document, the combination of topics can narrow down the source. A public source may still be found by searching, and with non-public material the people who have read it may be able to guess. Keeping fewer items makes it harder.
 
-## チャット(claude.ai など)で使う
+## Using it in chat (claude.ai and similar)
 
-スキルのフォルダを、それぞれ zip にしてスキルとしてアップロードする。
+Zip each skill folder and upload it as a skill.
 
 ```bash
 cd .claude/skills
@@ -433,62 +439,62 @@ zip -r search-knowhow.zip search-knowhow
 zip -r check-policy.zip check-policy
 ```
 
-- **抽出**: ファイルを添付して「ノウハウを抽出して」と依頼すると、同じ書式のノウハウが回答として示され、確認を求められる。問題ないと答えると、確定した全文に推奨のカテゴリとファイル名が添えて出力されるので、ノウハウフォルダに保存する。チャットでは機械チェックが動かないため、保存後にリポジトリで実行する。
-- **抽象化の度合い**: チャットには設定ファイルがないので、既定の `high` になる。変えたいときは依頼の中で指定する。
-- **規定の確認**: 設定を自動では集められないので、抽象化の度合い、保管場所、使っている生成AIサービスを尋ねられる。
-- **検索**: チャットからはノウハウフォルダを参照できないので、ノウハウファイルや `INDEX.md` を添付して質問する。
+- **Extract**: attach a file and ask "extract know-how from this". The know-how is shown in the same format and you are asked to confirm. Once you say it is fine, the final text is output with a recommended category and file name; save it into the know-how folder. The mechanical check does not run in chat, so run it in the repository after saving.
+- **Abstraction level**: chat has no config file, so the default `high` applies. Name the level in the request to change it.
+- **Policy check**: the settings cannot be gathered automatically, so you are asked for the abstraction level, storage locations, and the generative-AI service used.
+- **Search**: the know-how folder cannot be read from chat, so attach the know-how files or `INDEX.md` when asking.
 
-## 構成
+## Layout
 
 ```
-knowhow.config.json          フォルダの場所と抽象化の度合いの設定
-knowhow/                     蓄積されたノウハウ(<カテゴリ>/<タイトル>.md)
-  INDEX.md                   目次
-inbox/                       処理前の元資料(git 管理外)
-policies/                    守秘義務契約や社内規程(git 管理外)
+knowhow.config.json          Folder locations and the abstraction level
+knowhow/                     Accumulated know-how (<category>/<title>.md)
+  INDEX.md                   Index
+inbox/                       Unprocessed source material (untracked by git)
+policies/                    Confidentiality agreements and internal regulations (untracked by git)
 .claude/skills/extract-knowhow/
-  SKILL.md                   抽出の手順
-  references/                特定情報の扱い、抽象化の度合いと引き上げ方、ノウハウの書式
-  scripts/check_sensitive.py 特定情報の機械チェック
+  SKILL.md                   Extraction procedure
+  references/                Handling identifying information, abstraction levels and lifting, file format
+  scripts/check_sensitive.py Mechanical check for identifying information
 .claude/skills/search-knowhow/
-  SKILL.md                   検索・参照の手順
+  SKILL.md                   Search and reference procedure
 .claude/skills/check-policy/
-  SKILL.md                   規定に照らした判定の手順
-  references/                規定のどこを見るか、度合いごとの判定の目安
-  scripts/policy_facts.py    設定と保管の状況を集める
-.githooks/pre-commit         コミット時に機械チェックを実行
-.sensitive-terms.example.txt 登録語リストの雛形
-CLAUDE.md                    Claude Code 向けの作業ルール
+  SKILL.md                   Procedure for judging against a policy
+  references/                What to look at in a policy, guide to judging by level
+  scripts/policy_facts.py    Gathers the settings and storage state
+.githooks/pre-commit         Runs the mechanical check at commit time
+.sensitive-terms.example.txt Template for the registered terms list
+CLAUDE.md                    Working rules for Claude Code
 ```
 
-`knowhow/`、`inbox/`、`policies/` は既定の場所で、設定で変えられる。
+`knowhow/`, `inbox/`, and `policies/` are the default locations and can be changed in the config.
 
-## 困ったとき
+## Troubleshooting
 
-**コミットが「特定情報の可能性がある記述が見つかりました」で止まる**
-表示された `ERROR` の行を修正する。登録語による誤検知(一般的な語を登録してしまった場合など)は、`.sensitive-terms.txt` から該当の語を外す。
+**The commit stops with "Possible source material or identifying information found"**
+Fix the lines shown as `ERROR`. For a false positive from a registered term (a common word was registered, for example), remove the word from `.sensitive-terms.txt`.
 
-**コミットが「inbox_dir(または policies_dir)配下のファイルはコミットできません」で止まる**
-元資料や規定の文書がコミット対象に入っている。`git restore --staged <ファイル>` で外す。
+**The commit stops with "files under inbox_dir (or policies_dir) cannot be committed"**
+Source material or a policy document is staged. Unstage it with `git restore --staged <file>`.
 
-**フックが動いていない**
-`git config core.hooksPath` の結果が `.githooks` になっているか確認する。クローンし直した場合は再設定が必要。
+**The hook does not run**
+Check that `git config core.hooksPath` prints `.githooks`. It has to be set again after a fresh clone.
 
-**「設定エラー: 確認対象が見つかりません」と出る**
-`knowhow_dir` のフォルダが存在しない。`--show-config` でパスを確認し、フォルダを作るか設定を直す。
+**"config error: nothing to check at: …"**
+The `knowhow_dir` folder does not exist. Check the path with `--show-config`, then create the folder or fix the setting.
 
-**抽出結果が抽象的すぎる/具体的すぎる**
-その場かぎりなら、保存前の確認で「もっと具体的に」「この部分は特定できてしまう」と伝えて直してもらう。いつもそう感じるなら、`abstraction_level` を変える。基準そのものを調整したい場合は、`.claude/skills/extract-knowhow/references/` の `conceptualization.md`(抽象化)と `anonymization.md`(特定情報の扱い)を直す。
+**"config error: … abstraction_level must be one of low / medium / high"**
+The value of `abstraction_level` in the config file is none of the three. Fix it.
 
-**「設定エラー: abstraction_level は low / medium / high のいずれかで指定してください」と出る**
-設定ファイルの `abstraction_level` の値が3つのどれでもない。値を直す。
+**The extracted know-how is too abstract or too concrete**
+For a one-off, say "more concrete" or "this part is identifiable" at confirmation and have it revised. If it is always the case, change `abstraction_level`. To adjust the standards themselves, edit `conceptualization.md` (abstraction) and `anonymization.md` (identifying information) under `.claude/skills/extract-knowhow/references/`.
 
-**`_drafts/` に下書きが残っている**
-確認の途中で作業が中断されたもの。次に抽出を依頼すると、続きから行うか破棄するかを尋ねられる。不要なら削除してよい。
+**Drafts are left in `_drafts/`**
+Work was interrupted during confirmation. The next time you ask for an extraction, you are asked whether to continue from them or discard them. Delete them if they are not needed.
 
-**検索で見つからない**
-別の言い方で聞き直すか、`INDEX.md` を直接見る。本当に蓄積がない領域であれば、関連する資料から抽出して増やしていく。
+**Search finds nothing**
+Ask again in other words, or look at `INDEX.md` directly. If the area really has nothing stored, extract from related material to build it up.
 
-## ライセンス
+## License
 
 [MIT License](LICENSE)

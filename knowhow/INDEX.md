@@ -1,3 +1,3 @@
-# ノウハウ一覧
+# Know-how index
 
-カテゴリごとに、1ノウハウ1行で並べる。追加・更新は `extract-knowhow` スキルが行う。
+One line per know-how item, grouped by category. The `extract-knowhow` skill adds and updates entries.

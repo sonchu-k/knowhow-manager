@@ -1,51 +1,51 @@
-# 規定のどこを見るか
+# What to look at in a policy
 
-規定から拾う条項の種類と、ノウハウ管理のどの段階(A 保管 / B 入力 / C 蓄積 / D 利用)に関わるか、判定で見る点をまとめる。ここにない種類の条項でも、4つの段階のどれかに関わるものは拾う。
+The kinds of clause to pick out, which stage of know-how management they touch (A storage / B input / C accumulation / D use), and what to check when judging. Pick up clauses of kinds not listed here too, if they touch any of the four stages.
 
-## 条項の種類
+## Kinds of clause
 
-| 条項の種類 | 関わる段階 | 見る点 |
+| Kind of clause | Stage | What to check |
 |---|---|---|
-| 秘密情報の定義 | すべて | 何が秘密情報に当たるか。口頭の情報、会議で知った情報を含むか。秘密である旨の表示を要件としているか |
-| 派生物・分析結果の扱い | C、D | 秘密情報をもとに作成した要約、分析、メモ、派生物を秘密情報に含めているか。含めている場合、抽象化したノウハウも対象になりうる |
-| 残留情報の扱い | C、D | 記憶に残った一般的な知識・経験・技能を自由に使ってよいとする定めがあるか。ある場合でも、文書に書き留めることまで認めているかは別に確かめる |
-| 適用除外 | C、D | 公知の情報、独自に得た情報などの除外があるか。抽象化したことは、除外の理由には当たらないことが多い |
-| 目的外利用の禁止 | B、C、D | 秘密情報を使ってよい目的が限定されているか。ノウハウとして蓄積し、別の仕事で使うことがその目的に入るか |
-| 第三者への開示・提供の禁止 | B、C | 生成AIサービスやクラウドのリポジトリへの保存が、第三者への開示・提供に当たりうるか。委託先・外部サービスの利用についての定めや、事前承諾の要件があるか |
-| 複製・保管・持ち出しの制限 | A、C | 複製の可否、保管場所や方法の指定(社内システム限定、暗号化、私物端末の禁止など)、社外への持ち出しの制限 |
-| 返還・廃棄 | A、C | 契約終了時や求めがあったときに、資料とその複製物を返還・廃棄する義務。元資料フォルダに残したファイル、下書き、ノウハウが対象になるか |
-| 生成AI・外部サービスの利用ルール | B | 利用できるサービスの指定、入力してよい情報の区分、学習に使われない設定の要件、承認手続き |
-| 個人情報 | A、B、C | 個人情報を含む資料の取り扱い、第三者提供や国外への移転の制限 |
-| 未公表の重要事実 | B、C、D | 投資判断に影響する未公表の事実や、取引規制に関わる情報の扱い。抽象化しても、時期や文脈から推測できれば問題になりうる |
-| 競業・利益相反 | D | ある組織で得た知見を、競合関係にある別の組織の仕事で使うことへの制限 |
-| 存続期間 | すべて | 義務がいつまで続くか。契約終了後も続くか |
-| 報告・事故対応 | すべて | 漏えいやそのおそれがあったときの報告義務 |
+| Definition of confidential information | All | What counts. Whether oral information and things learned in meetings are included. Whether marking as confidential is required |
+| Derivatives and analyses | C, D | Whether summaries, analyses, notes, or derivatives made from confidential information are included in it. If so, abstracted know-how may be covered |
+| Residual information | C, D | Whether general knowledge, experience, and skills retained in memory may be used freely. Even if so, check separately whether writing them down is allowed |
+| Exclusions | C, D | Whether public information or independently obtained information is excluded. Having abstracted something is usually not a ground for exclusion |
+| Use outside the stated purpose | B, C, D | Whether the purposes for which confidential information may be used are limited. Whether accumulating it as know-how and using it in other work falls within them |
+| Disclosure or provision to third parties | B, C | Whether entering material into a generative-AI service or saving it to a cloud repository may count as disclosure or provision. Whether there are terms on contractors and external services, or a prior-consent requirement |
+| Limits on copying, storage, and removal | A, C | Whether copying is allowed, any specified storage location or method (company systems only, encryption, no personal devices), limits on taking material off premises |
+| Return and destruction | A, C | Duty to return or destroy material and copies at the end of the contract or on request. Whether files left in the inbox folder, drafts, and know-how are covered |
+| Rules on generative AI and external services | B | Approved services, classes of information that may be entered, a requirement that inputs not be used for training, approval procedures |
+| Personal information | A, B, C | Handling of material containing personal information; limits on provision to third parties and transfer abroad |
+| Undisclosed material facts | B, C, D | Handling of undisclosed facts that affect investment decisions and information subject to trading rules. Even when abstracted, it can be a problem if it can be inferred from timing or context |
+| Competition and conflicts of interest | D | Limits on using what was learned at one organization in work for a competing one |
+| Term | All | How long the obligations last, and whether they survive the end of the contract |
+| Reporting and incident response | All | Duty to report a leak or a risk of one |
 
-## 抽象化の度合いと判定の目安
+## Abstraction level and a rough guide to judging
 
-設定された度合いで何が残るかにもとづいて考える。以下は目安であり、条項の文言が優先する。
+Reason from what remains at the configured level. The following is a guide; the wording of the clause takes precedence.
 
-| 条項の内容 | `low` | `medium` | `high` |
+| What the clause says | `low` | `medium` | `high` |
 |---|---|---|---|
-| 秘密情報そのものの開示・複製を禁じている(派生物への言及なし) | 具体的な手順や項目が残るので、対応していないとなりやすい | 分野や方法が残る。文言次第で、判断できないとなりやすい | 元の情報の形は残らない。ただし派生物に及ぶかは文言次第で、判断できないとなりうる |
-| 派生物・分析結果も秘密情報に含めている | 対応していない | 対応していない、または判断できない | 判断できない(原理まで引き上げても、もとにして作成したものには当たりうる) |
-| 残留情報の自由な利用を認めている | 文書化した具体的な手順は残留情報を超えることが多い | 判断できない | 対応しているとなりやすい。文書化まで認めているかを確かめる |
-| 特定の相手方・案件を識別できる情報の開示を禁じている | 出どころが分かりやすく、対応していないとなりやすい | 判断できない | 対応しているとなりやすい。同じ資料から複数残す場合と、元が検索できる場合は弱くなる |
+| Prohibits disclosing or copying the confidential information itself (no mention of derivatives) | Concrete steps and items remain; tends toward not compliant | Field and method remain; tends toward cannot determine, depending on wording | The shape of the original does not remain. Whether it reaches derivatives depends on wording; may be cannot determine |
+| Includes derivatives and analyses in confidential information | Not compliant | Not compliant, or cannot determine | Cannot determine (even lifted to a principle, it may count as something made from the information) |
+| Allows free use of residual information | Written-down concrete steps usually go beyond residual information | Cannot determine | Tends toward compliant. Check whether writing it down is allowed |
+| Prohibits disclosing information that identifies a particular counterparty or engagement | Origin is easy to recognize; tends toward not compliant | Cannot determine | Tends toward compliant. Weaker when several items come from one document or the source is searchable |
 
-## 度合いに関係なく決まること
+## What no level changes
 
-次の点は、抽象化の度合いをどう設定しても変わらない。条項がこれらを制限していれば、設定の変更では対応できない。
+The following are the same whatever the abstraction level is set to. If a clause restricts them, no settings change can address it.
 
-- **段階B(入力)**: 元の資料は、抽象化する前の形で生成AIサービスに送られる。外部サービスへの入力を禁じる、または承認を要する規定があれば、抽象化の度合いにかかわらず、そこで対応が必要になる。
-- **段階A(保管)**: 元の資料は、処理のあとも元資料フォルダに残る。保管場所や返還・廃棄の定めには、設定ではなく運用(置き場所の変更、処理後の削除)で対応する。
-- **段階C のうち保存先**: ノウハウフォルダがリモートリポジトリにつながっている場合、ノウハウは外部のサービス上に置かれる。
+- **Stage B (input)**: The source document is sent to the generative-AI service in its form before abstraction. If a policy prohibits entering material into external services, or requires approval, that has to be dealt with regardless of the level.
+- **Stage A (storage)**: The source document stays in the inbox folder after processing. Rules on storage location and on return or destruction are addressed by practice (moving the folder, deleting after processing), not by settings.
+- **Where stage C saves to**: If the know-how folder is connected to a remote repository, the know-how sits on an external service.
 
-## 判定を誤りやすいところ
+## Where judgments go wrong
 
-- 「固有名詞を消したから秘密情報ではない」と考える。多くの規定は、情報の中身で秘密かどうかを決めており、名前の有無では決めていない。
-- 定めがないことを、許されていると読む。
-- 残留情報の定めを、文書に書き留めて蓄積することにまで広げて読む。
-- 生成AIサービスの契約条件(入力が学習に使われるか、どこに保存されるか)を確かめずに、段階B を対応しているとする。
-- 規定の一部しか読んでいないのに、全体について判定する。
-- 入力してはならない区分の情報を、生成AIに頼んで取り除こうとする。取り除く作業を頼むこと自体が入力になる。該当部分は、読ませる前に本人が除く必要がある。
-- 生成AIサービスの契約が、関わっている組織のどれかの名義である場合を見落とす。別の組織の秘密情報が、その組織の管理下にあるサービスに入ることになる。
+- Thinking "the proper nouns are gone, so it is not confidential information". Most policies decide confidentiality by the content of the information, not by whether a name is present.
+- Reading the absence of a rule as permission.
+- Stretching a residual-information clause to cover writing things down and accumulating them.
+- Judging stage B compliant without checking the terms of the generative-AI service (whether inputs are used for training, where they are stored).
+- Judging the whole policy after reading only part of it.
+- Asking generative AI to strip out information of a class that must not be entered. Asking for the stripping is itself the input. The user has to remove those parts before anything is read.
+- Overlooking the case where the generative-AI contract is in the name of one of the organizations involved. Another organization's confidential information would then enter a service under that organization's control.

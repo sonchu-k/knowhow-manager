@@ -1,111 +1,115 @@
 ---
 name: check-policy
-description: 守秘義務契約、秘密保持条項、社内規程、情報管理規程、生成AIの利用ルールなどの規定を読み、ノウハウ管理の現在の設定(抽象化の度合い、保管場所など)と運用がその規定に十分対応しているかを条項ごとに判定し、理由と対応案を示す。「この契約で今の設定は大丈夫?」「規程に照らしてチェックして」「規定チェックして」「この資料をノウハウにしていいか確認して」と言われたとき、または新しい規定を受け取って設定を見直したいときに使う。
+description: Read rules such as a confidentiality agreement, non-disclosure clause, internal regulation, information-handling policy, or generative-AI usage guideline, and judge clause by clause whether the current know-how management settings (abstraction level, storage locations, and so on) and working practice are enough to comply, giving reasons and options for each. Use when the user says things like "is my current setup OK under this agreement?", "check the settings against this policy", "can I turn this material into know-how?" (in Japanese, 「この契約で今の設定は大丈夫?」「規程に照らしてチェックして」「規定チェックして」), or has received a new set of rules and wants to review the settings.
 ---
 
-# 規定チェック
+# Policy check
 
-守秘義務契約や社内規程を読み、ノウハウ管理のいまの設定と運用が、その規定に対応できているかを判定する。
+Read a confidentiality agreement or internal regulation and judge whether the current know-how management settings and practice comply with it.
 
-これは**見落としを減らすための下調べ**であり、法的な判断ではない。契約の解釈は相手方や準拠法によって変わる。迷うところを「対応している」と言い切らないこと、最終的な判断は本人と各社の法務・事務局に委ねることが、このスキルの一番大事な約束である。対応していると誤って伝えるほうが、判断できないと伝えるよりずっと害が大きい。
+This is **groundwork to reduce oversights**, not a legal judgment. How a contract is read depends on the counterparty and the governing law. The most important commitment of this skill is never to say "compliant" where there is doubt, and to leave the final decision to the user and each organization's legal or secretariat function. Wrongly saying "compliant" does far more harm than saying "cannot determine".
 
-## フォルダの場所
+## Language
 
-規定の置き場は、リポジトリ直下の `knowhow.config.json` の `policies_dir`(既定は `policies`)で決まる。`knowhow.config.local.json` があればその値が優先される。このフォルダは git 管理外で、コミット前フックでもコミットが拒否される。
+Report in the user's language. Quote clauses in the language they are written in.
 
-規定そのものも外に出せない文書である。
+## Where things live
 
-- 規定の本文を、git 管理対象のファイルに書き写さない。
-- 回答の中で引用するのは、判定の根拠を示すのに必要な短い範囲にとどめ、条項番号で指す。
-- 相手方の社名などを、コミットメッセージやノウハウに書かない。
+Policy documents go in the folder set by `policies_dir` (default `policies`) in `knowhow.config.json` at the repository root. If `knowhow.config.local.json` exists, its value takes precedence. The folder is untracked by git and rejected by the pre-commit hook.
 
-## 手順
+The policy documents are themselves confidential.
 
-### 1. 規定を読む
+- Do not copy policy text into any git-tracked file.
+- In answers, quote only the short span needed to support a judgment, and refer to clauses by number.
+- Do not write the counterparty's name in commit messages or know-how.
 
-ユーザーが指定したファイル、貼り付けたテキスト、または規定フォルダの中の文書を、最後まで読む。対象が複数ある場合は、どれを対象にするかをユーザーに確かめる。
+## Steps
 
-規定の文書そのものが、その規定のいう秘密情報に当たる場合がある。読んだ時点で生成AIサービスに入力したことになるので、報告の「前提と限界」に、規定の本文を生成AIで読んだこと、それが規定に触れるかは判定していないことを書く。
+### 1. Read the policy
 
-規定の一部しか渡されていないと思われるとき(定義条項がない、別紙への参照があるなど)は、その旨を記録しておき、判定の際に「判断できない」の理由として挙げる。
+Read the file the user named, the pasted text, or the documents in the policy folder, to the end. If there are several, confirm with the user which ones are in scope.
 
-### 2. 現在の設定と運用を集める
+The policy document may itself be confidential information under its own terms. Reading it means it has been entered into a generative-AI service, so state in the "assumptions and limits" of the report that the policy text was read with generative AI and that whether this conflicts with the policy has not been judged.
 
-次のコマンドで、設定と保管の状況を集める。
+If it looks as though only part of the policy was provided (no definitions clause, references to an appendix), note that and give it as a reason for "cannot determine" when judging.
+
+### 2. Gather the current settings and practice
+
+Gather the settings and storage state with:
 
 ```bash
 python3 .claude/skills/check-policy/scripts/policy_facts.py
 ```
 
-あわせて、抽象化の度合いごとに何が残るかを `.claude/skills/extract-knowhow/references/conceptualization.md` の表で確かめる。設定値の名前だけで判定せず、その度合いで実際に何がノウハウに残るかにもとづいて判定する。
+Also check what each abstraction level leaves behind, using the table in `.claude/skills/extract-knowhow/references/conceptualization.md`. Do not judge from the name of the setting; judge from what actually remains in know-how at that level.
 
-コマンドの出力の最後にある「ここからは分からないこと」は、判定に影響する場合に限ってユーザーに尋ねる。答えが得られない項目は、推測で埋めずに「判断できない」とする。
+The last part of the command's output, "not knowable from here", lists facts to ask the user about, only where they affect a judgment. For anything left unanswered, do not guess; mark it "cannot determine".
 
-### 3. 規定から関係する条項を拾う
+### 3. Pick out the relevant clauses
 
-ノウハウ管理は、次の4つの段階に分けて考える。規定の条項がどの段階に関わるかを見る。
+Think of know-how management as four stages, and see which stage each clause touches.
 
-| 段階 | 起きること |
+| Stage | What happens |
 |---|---|
-| A. 保管 | 元の資料を手元の元資料フォルダに置く |
-| B. 入力 | 元の資料を生成AIサービスに読ませる |
-| C. 蓄積 | 特定情報を除いて抽象化したノウハウを保存する(リモートリポジトリへの保存を含む) |
-| D. 利用 | 蓄積したノウハウを、別の場面・別の組織の仕事で使う |
+| A. Storage | The source document is kept locally in the inbox folder |
+| B. Input | The source document is read by a generative-AI service |
+| C. Accumulation | Know-how, with identifying information removed and abstracted, is saved (including to a remote repository) |
+| D. Use | Accumulated know-how is used in another setting or in work for another organization |
 
-拾うべき条項の種類と、それぞれで見るべき点は [references/checkpoints.md](references/checkpoints.md) にある。条項を拾う前に読む。
+The kinds of clause to look for and what to check in each are in [references/checkpoints.md](references/checkpoints.md). Read it before picking out clauses.
 
-### 4. 条項ごとに判定する
+### 4. Judge each clause
 
-関係する条項ごとに、次の3つのいずれかを付ける。
+Give each relevant clause one of three judgments.
 
-| 判定 | 意味 |
+| Judgment | Meaning |
 |---|---|
-| 対応している | 条項が求めることと、設定・運用の事実とを突き合わせて、満たしていると言える |
-| 対応していない | 条項が求めることを、いまの設定・運用では満たしていない |
-| 判断できない | 条項の文言からは決められない、規定の一部が手元にない、または判定に必要な事実が分からない |
+| Compliant | Comparing what the clause requires with the facts of the settings and practice, it can be said to be met |
+| Not compliant | The current settings and practice do not meet what the clause requires |
+| Cannot determine | The wording does not settle it, part of the policy is missing, or a fact needed for the judgment is unknown |
 
-判定の決まり:
+Rules for judging:
 
-- 根拠となる条項を番号で示し、必要な範囲で短く引用する。
-- どの設定値、どの事実にもとづく判定かを書く。
-- 条項の文言が、抽象化したノウハウに及ぶかどうかはっきりしないときは、「判断できない」とする。「原理まで抽象化したのだから秘密情報には当たらないはず」という推論で「対応している」にしない。
-- 規定に書かれていないことを、書かれていないから許されている、と読まない。
-- 一つの条項が複数の段階に関わるときは、段階ごとに分けて判定する(保管は対応しているが入力は対応していない、など)。
-- 「判断できない」は、文言があいまいなときと事実が分からないときに使う。文言が明確で、事実も分かっていて、満たしていないなら「対応していない」とする。たとえば、秘密情報の使用を特定の職務の遂行に限る条項があり、秘密情報に当たることが明らかな資料を、別の場面で再利用するノウハウを作るために読ませるのであれば、入力と蓄積の段階は「対応していない」である。抽象化したノウハウを別の場面で使うこと(段階D)が同じ条項に触れるかは、ノウハウが秘密情報に当たるかどうか次第なので、そこが文言から決まらなければ「判断できない」とする。
+- Cite the clause by number and quote briefly as needed.
+- State which setting value and which fact the judgment rests on.
+- When it is unclear whether the wording reaches abstracted know-how, use "cannot determine". Do not reach "compliant" by reasoning that "it was abstracted to a principle, so it cannot be confidential information".
+- Do not read silence as permission.
+- When one clause touches several stages, judge each stage separately (storage compliant, input not compliant, and so on).
+- "Cannot determine" is for unclear wording and unknown facts. Where the wording is clear, the facts are known, and the requirement is not met, say "not compliant". For example, if a clause limits use of confidential information to the performance of a particular role, and material that is plainly confidential is read in order to build know-how for reuse elsewhere, the input and accumulation stages are "not compliant". Whether using the abstracted know-how elsewhere (stage D) falls under the same clause depends on whether the know-how counts as confidential information; if the wording does not settle that, use "cannot determine".
 
-### 5. 総合判定と対応案をまとめる
+### 5. Give the overall judgment and options
 
-総合判定は次の3つから選ぶ。
+Choose the overall judgment from three.
 
-- **対応している**: 関係する条項がすべて「対応している」。
-- **条件付き**: 「対応していない」はないが「判断できない」がある。または、設定や運用を変えれば対応できる。
-- **対応していない**: 設定を変えても満たせない条項がある(その資料は処理しない、相手方の許可を得る、などが必要)。
+- **Compliant**: every relevant clause is "compliant".
+- **Conditional**: no "not compliant", but some "cannot determine"; or compliance can be reached by changing settings or practice.
+- **Not compliant**: some clause cannot be met by changing settings (the material must not be processed, the counterparty's permission is needed, and so on).
 
-対応案は、次の順に分けて示す。
+Present the options in this order.
 
-1. **設定の変更で対応できること**: `abstraction_level` の変更、保管場所の変更、登録語の追加、フックの有効化など。変更後に何が変わるかを書く。
-2. **運用の変更で対応できること**: 特定の種類の資料は入力しない、処理後に元資料を削除する、残す件数を絞る、など。
-3. **確認が必要なこと**: 誰に何を尋ねればよいかを具体的に書く(相手方の事務局に、条項のこの文言が派生物を含むかを尋ねる、など)。
+1. **What a settings change can address**: changing `abstraction_level`, moving storage, adding registered terms, enabling the hook. Say what changes as a result.
+2. **What a change in practice can address**: not entering certain kinds of material, deleting source documents after processing, keeping fewer items.
+3. **What needs to be confirmed**: who to ask and what, specifically (ask the counterparty's secretariat whether this wording in the clause covers derivatives, for example).
 
-設定ファイルは、ユーザーが同意するまで書き換えない。
+Do not edit the config file until the user agrees.
 
-### 6. 報告する
+### 6. Report
 
-次の構成で伝える。
+Use this structure.
 
-- **総合判定**と、その一番の理由
-- **条項ごとの判定**: 条項、求めていること、関わる段階、いまの設定・事実、判定、理由を表にする
-- **対応案**: 上の3分類
-- **この判定の前提と限界**: 渡された規定の範囲、尋ねても分からなかった事実、法的な判断ではないこと
+- **Overall judgment** and the main reason for it
+- **Judgment per clause**: a table of clause, what it requires, stage, current setting or fact, judgment, reason
+- **Options**: the three groups above
+- **Assumptions and limits**: the extent of the policy provided, facts that remained unknown after asking, and that this is not a legal judgment
 
-ユーザーが望めば、報告を `<規定フォルダ>/_reports/` に保存する(git 管理外)。
+If the user wants, save the report to `<policy folder>/_reports/` (untracked by git).
 
-## 規定が複数ある場合
+## Several policies
 
-規定ごとに分けて判定する。設定はすべての資料に共通なので、設定は最も厳しい規定に合わせる必要がある。規定によって厳しさが大きく違うときは、設定を厳しい側に合わせる案に加えて、「その規定が及ぶ資料だけ別の扱いにする(依頼のたびに度合いを指定する、処理しない)」案も示す。
+Judge each policy separately. The settings are shared by all material, so they have to meet the strictest policy. When policies differ greatly in strictness, offer, alongside matching the settings to the strictest, the option of treating only the material that policy covers differently (naming the level per request, or not processing it).
 
-ある規定のもとで得た情報が、別の規定の相手方に関わる仕事で使われることになる点(段階D)は、複数の組織に関わる人にとって特に重要である。目的外利用や第三者への開示に関する条項を、この観点でも読む。
+Information obtained under one policy may end up being used in work related to the counterparty of another (stage D). This matters especially for someone who works with several organizations. Read the clauses on use outside the stated purpose and on disclosure to third parties from this angle too.
 
-## リポジトリ外(チャットなど)で使う場合
+## Outside the repository (chat and similar)
 
-設定を集めるコマンドは使えない。ユーザーに、抽象化の度合い、元資料とノウハウの保管場所、使っている生成AIサービスを尋ねてから、手順3以降を行う。答えが得られない項目は「判断できない」とする。
+The command that gathers settings is not available. Ask the user for the abstraction level, where source documents and know-how are kept, and which generative-AI service is used, then carry out step 3 onward. For anything left unanswered, use "cannot determine".

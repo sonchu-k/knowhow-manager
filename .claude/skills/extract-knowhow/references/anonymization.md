@@ -1,76 +1,76 @@
-# 特定情報の扱い
+# Handling identifying information
 
-ここで扱うのは、固有名詞や識別子をどう取り除くかである。これは最低限の処理にすぎない。取り除いたうえで、出来事を原理まで引き上げて書き直す必要がある。その方法は [conceptualization.md](conceptualization.md) を参照。
+This file covers how to remove proper nouns and identifiers. That is only the minimum. After removing them, the event still has to be lifted to a principle and rewritten; see [conceptualization.md](conceptualization.md) for that.
 
-## 取り除くもの
+## What to remove
 
-| 種類 | 例 | 置き換え方 |
+| Kind | Examples | How to replace |
 |---|---|---|
-| 個人名・ニックネーム・ID | 氏名、社員番号、アカウント名 | 役割で表す(「顧客側の決裁者」「新任のリーダー」) |
-| 連絡先 | メール、電話、住所、SNS | 削除 |
-| 企業・団体名 | 自社、顧客、取引先、競合 | 立場と性質で表す(「発注元の製造業」「競合の大手」) |
-| 製品・サービス・プロジェクト名 | 社内コードネーム、非公開の製品名 | 種類で表す(「社内向け申請システム」) |
-| 金額・契約条件 | 見積額、単価、契約期間 | 桁感・比率にする、または削除 |
-| 日付・期間 | 具体的な年月日 | 相対表現にする(「リリース2週間前」「期初」) |
-| 場所 | 拠点名、店舗名、市区町村 | 削除、または「地方拠点」程度に |
-| 内部情報 | 未公開の戦略、人事、売上、障害の詳細 | ノウハウに不要なら削除。必要なら構造だけ残す |
-| 機微な個人情報 | 健康、家族、評価、信条 | 削除 |
-| システム上の識別子 | URL、ホスト名、IP、チケット番号、ファイルパス | 削除 |
+| Personal names, nicknames, IDs | Full names, employee numbers, account names | Describe the role ("the decision-maker on the client side", "a newly appointed lead") |
+| Contact details | Email, phone, address, social accounts | Delete |
+| Company and organization names | Own company, clients, suppliers, competitors | Describe position and nature ("the manufacturer placing the order", "a large competitor") |
+| Product, service, project names | Internal code names, unreleased product names | Describe the type ("an internal request system") |
+| Amounts and contract terms | Quotes, unit prices, contract periods | Use order of magnitude or ratio, or delete |
+| Dates and periods | Specific dates | Use relative terms ("two weeks before release", "start of the fiscal year") |
+| Places | Site names, store names, municipalities | Delete, or reduce to something like "a regional office" |
+| Internal information | Unpublished strategy, personnel matters, sales figures, incident details | Delete if the know-how does not need it. If it does, keep only the structure |
+| Sensitive personal information | Health, family, evaluations, beliefs | Delete |
+| System identifiers | URLs, host names, IPs, ticket numbers, file paths | Delete |
 
-一般に公開されているツールや手法の名前(広く使われているソフトウェア、フレームワーク、方法論)は、それ自体がノウハウの中身であれば残してよい。ただし「どの会社がそれを使っているか」と結び付く書き方は避ける。
+The names of publicly available tools and methods (widely used software, frameworks, methodologies) may stay when they are themselves the content of the know-how. Avoid wording that ties them to which company uses them.
 
-## 組み合わせによる特定
+## Identification by combination
 
-個々には無害でも、並べると特定できることがある。
+Details that are harmless one by one can identify when listed together.
 
-> 北陸の従業員300名ほどの老舗酒造メーカーで、2025年春に基幹システムを入れ替えた際……
+> At a long-established sake brewer in Hokuriku with about 300 employees, when the core system was replaced in spring 2025…
 
-社名はなくても、関係者にはほぼ特定できる。ノウハウに効いている属性だけを残す。
+No company name, yet people involved can almost certainly tell. Keep only the attributes the know-how depends on.
 
-> 長く同じ基幹システムを使ってきた中堅メーカーで入れ替えを行う際……
+> When replacing a core system at a mid-sized manufacturer that has used the same one for many years…
 
-残す属性は「その属性が変わったらノウハウが成り立たなくなるか」で判断する。成り立つなら不要な属性なので削る。
+Decide what to keep by asking "would the know-how stop holding if this attribute changed?" If it would still hold, the attribute is unnecessary; drop it.
 
-## 構成や言い回しも手がかりになる
+## Structure and wording are clues too
 
-固有名詞がすべて消えていても、次のものが残っていると、元の資料を知る人や、言い回しで検索する人には出どころが分かる。
+Even with every proper noun gone, the following let someone who knows the source, or who searches on wording, find where it came from.
 
-- 元の資料と同じ項目名・分類名・並び順の列挙
-- 資料に特有の造語や珍しい言い回し
-- 原理に関係のない数値や進行の細部
-- 語順を保った言い換え
-- 出来事の経緯を語る段落
-- 本文で消した文脈を書き戻すタグ・カテゴリ・`source_type`
-- 同じ資料から作った複数のノウハウを並べると復元できる出来事
+- Lists with the same item names, classification names, or ordering as the source
+- Coined terms or unusual phrases particular to the source
+- Numbers and procedural details that have nothing to do with the principle
+- Paraphrases that keep the original word order
+- Paragraphs narrating what happened
+- Tags, categories, or `source_type` values that put back context removed from the body
+- Events that can be reconstructed by reading several know-how items from the same document side by side
 
-これらは、置き換えではなく、原理から書き直すことで消す。
+These are removed by rewriting from the principle, not by substitution.
 
-## 一般化の例
+## Example of generalizing
 
-**元の記述(架空)**
+**Original (fictional)**
 
-> A社の山田部長は初回の提案で金額を見た途端に難色を示したが、2回目に田中さんが3プランを並べて持っていったところ、真ん中の1,200万円のプランですぐ合意できた。
+> Director Yamada at Company A balked the moment he saw the price in the first proposal, but when Tanaka brought three plans side by side to the second meeting, they agreed on the middle one at 12 million yen straight away.
 
-**悪い例: 名前を伏せただけ**
+**Bad: names hidden, nothing else**
 
-> ある会社の部長は初回提案で難色を示したが、2回目に3プランを並べたところ真ん中の1,200万円のプランで合意できた。
+> A director at a certain company balked at the first proposal, but when three plans were presented side by side the second time, they agreed on the middle one at 12 million yen.
 
-出来事の記録のままで、金額も残っており、次にどうすればよいかが読み取れない。
+Still a record of an event, the amount is still there, and it does not tell the reader what to do next time.
 
-**悪い例: 一般化しすぎ**
+**Bad: generalized too far**
 
-> 提案は相手の立場に立って行うことが大切。
+> It is important to make proposals from the other party's point of view.
 
-元の資料がなくても書ける内容で、行動が変わらない。
+Could be written without the source, and changes nobody's behavior.
 
-**良い例**
+**Good**
 
-> 単一の見積もりを提示すると、相手の判断は「受けるか断るか」になり、金額への抵抗がそのまま拒否につながりやすい。範囲の異なる複数案を並べて提示すると、判断が「どれを選ぶか」に変わり、合意に進みやすくなる。初回で金額に難色を示された場合の立て直しにも使える。
+> Presenting a single quote turns the other party's decision into "accept or refuse", so resistance to the price tends to become refusal. Presenting several options of differing scope side by side turns the decision into "which one", and agreement comes more easily. It also works as a way to recover after a first quote has met resistance on price.
 
-誰の話かは分からないが、何をすればよいか、なぜ効くかが残っている。
+Nobody can tell whose story it is, but what to do and why it works are still there.
 
-## 迷ったとき
+## When in doubt
 
-- 残すか迷う固有の細部は、落とす。
-- 落とすとノウハウが成り立たなくなるなら、そのノウハウは保存せず、ユーザーに判断を仰ぐ。
-- 資料全体が機微な内容(人事評価、トラブルの当事者が明らかなものなど)の場合は、抽出を始める前にユーザーへ確認する。
+- If you are unsure whether to keep a specific detail, drop it.
+- If the know-how no longer holds without it, do not save that know-how; ask the user to decide.
+- If the whole document is sensitive (personnel evaluations, a dispute whose parties are obvious), check with the user before starting to extract.

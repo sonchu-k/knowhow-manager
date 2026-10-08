@@ -1,15 +1,15 @@
-# 元資料は特定情報を含むため管理しない
+# Source documents contain identifying information; never track them
 inbox/*
 !inbox/.gitkeep
 
-# 守秘義務契約や社内規程(それ自体が外に出せない)
+# Confidentiality agreements and internal regulations (confidential themselves)
 policies/*
 !policies/.gitkeep
 
-# 検出したい固有名詞のリスト(それ自体が特定情報)
+# List of proper nouns to detect (identifying in itself)
 .sensitive-terms.txt
 
-# 個人ごとのフォルダ設定
+# Per-user settings
 knowhow.config.local.json
 
 .DS_Store

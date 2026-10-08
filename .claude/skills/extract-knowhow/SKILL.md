@@ -1,209 +1,213 @@
 ---
 name: extract-knowhow
-description: 入力されたファイルやチャット上の情報(議事録、提案書、チャットログ、振り返りメモ、メールなど)から、企業情報・個人情報などの特定情報を取り除き、出来事を場面が変わっても成り立つ原理(概念)まで引き上げたうえで、再利用できるノウハウとして抽出し、ユーザーの確認を経て蓄積する。資料がなくても、ユーザー自身のコメント・経験談・指示をもとにノウハウを残すこともできる。「ノウハウを抽出して」「この資料から学びを残して」「ナレッジ化して」「ノウハウとして蓄積して」「これをノウハウとして残して」「今言ったことをノウハウにして」と言われたとき、または資料を渡されて知見の整理を求められたときに使う。
+description: Extract reusable know-how from files or pasted text (meeting minutes, proposals, chat logs, retrospectives, emails, and the like). Removes identifying information such as company and personal details, lifts events up to principles that hold in other settings, shows the full draft to the user, and saves it only after they confirm. Also turns the user's own comments, experience, or instructions into know-how when there is no source document. Use when the user says things like "extract know-how from this", "capture the lessons from this document", "save this as know-how", "turn what I just said into know-how" (in Japanese, 「ノウハウを抽出して」「この資料から学びを残して」「これをノウハウとして残して」「ナレッジ化して」), or hands over material and asks to organize what was learned.
 ---
 
-# ノウハウ抽出
+# Extract know-how
 
-渡された資料やユーザーのコメントから「別の案件・別の人でも使える知見」を、出来事の記録としてではなく、場面が変わっても成り立つ**原理**として取り出し、誰の・どの会社の話かが分からない形で残す。
+Take what was learned from a source document or from the user's comments and keep it as a **principle** that holds in other settings, written so that nobody can tell whose story or which company it came from. The goal is a principle, not a record of what happened.
 
-目的は2つあり、両方を満たして初めて成功になる。
+Two things must both be true for the result to count as a success.
 
-- **再利用できること**: 元の資料を知らない人が読んで、自分の状況に当てはめて行動を変えられる。
-- **特定できないこと**: 読んだ人が、元になった企業・個人・案件を推測できない。
+- **Reusable**: someone who has never seen the source can read it, apply it to their own situation, and act differently.
+- **Not identifiable**: a reader cannot work out the company, person, or engagement behind it.
 
-固有名詞を消すだけでは、どちらも満たせない。出来事の形が残っていれば、別の分野では使いにくく、構成や言い回しから出どころも分かる。出来事から**原理(なぜそうなるのか)を取り出し、自分の言葉と構成で書き直す**のが基本方針である。こうすると元の資料の形が消え、同時に別の場面で使えるようになる。ただし上げすぎると「コミュニケーションは大事」のような、成り立たない場合を言えない一般論になる。
+Removing proper nouns achieves neither. If the shape of the event survives, the result is hard to use in another field, and its structure and wording still give the source away. The approach is to **take the principle (why it happens) out of the event and rewrite it in your own words and structure**. That erases the shape of the source and makes the result usable elsewhere at the same time. Go too far up, though, and you get a platitude like "communication matters", something with no case where it fails to hold.
 
-## 何をもとにするか
+## Language
 
-ノウハウのもとになるものは3通りある。最初にどれに当たるかを見極める。
+Work in the user's language. Talk to the user and write the know-how in the language they use. Frontmatter keys and the fixed values listed in the template (`basis`, `source_type`, `abstraction`) stay in English so that search and tooling keep working.
 
-| 場合 | 例 | ノウハウの中身を決めるのは |
+## What the know-how is based on
+
+There are three cases. Work out which one applies first.
+
+| Case | Example | What decides the content |
 |---|---|---|
-| 資料から抽出する | 「この議事録からノウハウを抽出して」 | 資料に書かれていること |
-| ユーザーのコメントをもとにする | 「これをノウハウとして残して: 見積もりは必ず3案出す。1案だと…」「今の指摘をノウハウにして」 | ユーザーが述べたこと |
-| 資料にユーザーのコメントが付いている | 「この振り返りの要は、現場を見に行かなかったことだと思う。それを残して」「価格交渉の観点だけ抽出して」 | ユーザーが述べたこと。資料はその裏付けと具体例 |
+| Extract from a document | "Extract know-how from these minutes" | What the document says |
+| Based on the user's comment | "Save this as know-how: always present three quotes. With one quote…" / "Turn that last point into know-how" | What the user said |
+| A document with the user's comment attached | "The real lesson in this retrospective is that we never visited the site. Keep that." / "Only extract the points about price negotiation" | What the user said. The document is supporting evidence and detail |
 
-ユーザーのコメントがもとになる場合、**ノウハウの主張はユーザーのものであり、自分の役割はそれを整理して形にすること**である。次の点を守る。
+When the user's comment is the basis, **the claim belongs to the user, and your job is to organize it and give it form**.
 
-- **主張を差し替えない**: ユーザーが言ったことを、自分がより妥当だと思う別の内容や、当たり障りのない一般論に置き換えない。言い回しは整えても、何をすべきか・なぜかという中身は変えない。
-- **足りない部分を作らない**: 「なぜ効くか」や当てはまる条件をユーザーが述べていなければ、もっともらしい理由を自分で考えて埋めない。下書きには「理由は未確認」のように書いておき、確認の際に尋ねる。自分から補いたい内容がある場合は、補足だと分かる形で提案し、採否をユーザーに委ねる。
-- **核心があいまいなら先に聞く**: 何をすべきだという話なのかが読み取れないときは、下書きを書く前に短く確認する。細部の不足は、下書きを見せるときにまとめて尋ねれば足りる。
-- **観点の指定に従う**: 「この観点で」「これだけ残して」と言われたら、その範囲に絞る。資料にほかに有用そうな点があっても、勝手に下書きにせず、確認の際に「ほかにこういう点もあったが、残すか」と尋ねるにとどめる。
-- **資料と食い違うときは隠さない**: ユーザーの見立てと資料の内容が合わない場合も、ノウハウはユーザーの主張をもとに書く。そのうえで、食い違いがあることを確認の際に伝える。
-- **特定情報の扱いは同じ**: ユーザーのコメントにも社名や人名は含まれる。資料と同じ基準で取り除く。会話の中でユーザーが出した指摘や訂正をもとにする場合も同様。
+- **Do not swap the claim.** Do not replace what the user said with something you find more reasonable, or with a safe generality. Tidy the wording, but keep what to do and why.
+- **Do not invent the missing parts.** If the user gave no reason or conditions, do not fill them in with something plausible. Write "reason not confirmed" in the draft and ask at confirmation. If you want to add something of your own, present it as a clearly marked suggestion and let the user decide.
+- **Ask first only if the core is unclear.** If you cannot tell what the user is saying should be done, check briefly before drafting. Smaller gaps can wait until you show the draft.
+- **Follow a stated scope.** If the user says "from this angle" or "only this", stay inside it. If the document holds other useful points, do not draft them; at confirmation, ask whether to keep them.
+- **Do not hide a mismatch with the document.** If the user's reading and the document disagree, still write the know-how from the user's claim, and say at confirmation that they disagree.
+- **Identifying information is handled the same way.** The user's comments contain names too. Remove them by the same standard as for documents, including when the basis is a correction or remark the user made during the conversation.
 
-ユーザーの確認を経てから保存する点も変わらない。
+Confirmation before saving applies here as well.
 
-## フォルダの場所
+## Where things live
 
-ノウハウの保存先と元資料の置き場は、リポジトリ直下の `knowhow.config.json` で決まる。作業の最初に読むこと。`knowhow.config.local.json` があれば、その値が優先される。
+Folders and the abstraction level are set in `knowhow.config.json` at the repository root. Read it before starting. If `knowhow.config.local.json` exists, its values take precedence.
 
-| キー | 意味 | 既定値 |
+| Key | Meaning | Default |
 |---|---|---|
-| `knowhow_dir` | ノウハウの保存先(以下「ノウハウフォルダ」) | `knowhow` |
-| `inbox_dir` | 処理前の元資料の置き場(以下「元資料フォルダ」) | `inbox` |
-| `sensitive_terms_file` | 検出したい固有名詞のリスト(以下「登録語ファイル」) | `.sensitive-terms.txt` |
-| `abstraction_level` | 抽象化の度合い。`low`(具体的な教訓・手順)/ `medium`(分野内の一般化)/ `high`(分野をまたぐ原理) | `high` |
+| `knowhow_dir` | Where know-how is saved (the "know-how folder") | `knowhow` |
+| `inbox_dir` | Where unprocessed source documents are placed (the "inbox folder") | `inbox` |
+| `sensitive_terms_file` | List of proper nouns to detect (the "terms file") | `.sensitive-terms.txt` |
+| `abstraction_level` | How far to abstract: `low` (concrete lessons and steps) / `medium` (generalized within the field) / `high` (principles that hold across fields) | `high` |
 
-相対パスは設定ファイルのあるフォルダが基準で、絶対パスや `~` も使える。設定ファイルがなければ既定値を使う。ユーザーが依頼の中で抽象化の度合いを指定した場合は、その依頼に限って設定より優先する。解決後のパスと度合いは次のコマンドで確認できる。
+Relative paths are resolved from the folder holding the config file; absolute paths and `~` also work. With no config file, the defaults apply. If the user names an abstraction level in the request, that takes precedence over the config for that request only. Show the resolved paths and level with:
 
 ```bash
 python3 .claude/skills/extract-knowhow/scripts/check_sensitive.py --show-config
 ```
 
-## 手順
+## Steps
 
-### 1. 入力を読む
+### 1. Read the input
 
-渡されたファイル・貼り付けられたテキストを最後まで読む。ユーザーのコメントだけがもとになる場合は、読む資料はないので、そのコメント(必要ならこれまでの会話の該当部分)を入力として扱う。リポジトリ内で作業している場合、未処理の資料は元資料フォルダに置かれている(git 管理外)。
+Read the files or pasted text to the end. When working in the repository, unprocessed material sits in the inbox folder (untracked by git). When only the user's comment is the basis, there is no document to read; treat the comment, and the relevant part of the conversation if needed, as the input.
 
-元資料の内容を、リポジトリ内の git 管理対象の場所へコピーしない。引用もしない。`_drafts/` は自分が書いた下書きの置き場なので、元資料として読まない(前回の作業の下書きが残っていたら、続きから行うか破棄するかをユーザーに尋ねる)。
+Do not copy source content into any git-tracked location, and do not quote it there. `_drafts/` holds drafts you wrote, so do not read it as source material. If drafts from an earlier session are still there, ask the user whether to continue from them or discard them.
 
-### 2. 特定情報を洗い出す
+### 2. Identify the identifying information
 
-抽出を始める前に、資料に含まれる特定情報を把握する。何を特定情報とみなし、どう置き換えるかは [references/anonymization.md](references/anonymization.md) を参照。
+Before extracting, take stock of the identifying information in the material. What counts and how to replace it is covered in [references/anonymization.md](references/anonymization.md).
 
-名前や社名のような直接的な識別子だけでなく、**組み合わせると特定できる情報**(業界+地域+規模+時期など)にも注意する。資料に特有の構成(様式の項目、分類、手順の段階)や言い回しも、この段階で「持ち込まないもの」として把握しておく。
+Watch for direct identifiers such as names, and also for **details that identify in combination** (industry + region + size + timing). At this stage also note the structure particular to the material (form fields, classifications, staged procedures) and its distinctive wording, as things not to carry over.
 
-### 3. ノウハウ候補を抽出する
+### 3. Collect candidates
 
-ユーザーのコメントがもとになる場合は、ユーザーが述べた主張がそのまま候補になる。複数の話が含まれていれば、1ノウハウ1主張になるよう分ける。以下の探し方と除外の基準は、資料から抽出する場合のものである。
+When the user's comment is the basis, the claims the user made are the candidates. If several points are mixed together, split them so that each know-how carries one claim. The search hints and exclusions below are for extracting from a document.
 
-資料からは、その要約ではなく、次のようなものを探す。
+From a document, look for the following rather than a summary of it.
 
-- うまくいったやり方と、それが効いた理由
-- 失敗・手戻りと、その原因、次に避ける方法
-- 判断の分かれ目になった基準(何を見て、どちらを選んだか)
-- 繰り返し使える手順・チェック項目・問いかけ
-- 事前の想定と実際のずれ
+- An approach that worked, and why it worked
+- A failure or rework, its cause, and how to avoid it next time
+- The criterion at a fork in a decision (what was looked at, which way it went)
+- Reusable steps, checks, or questions
+- A gap between what was expected and what happened
 
-ノウハウとして残さないもの:
+Do not keep:
 
-- 事実の記録にすぎないもの(誰が何をいつ決めたか)
-- その案件でしか成り立たない事情
-- 資料に根拠がなく、推測で補わないと書けないもの
-- 特定情報を消すと中身が残らないもの
+- Bare records of fact (who decided what and when)
+- Circumstances that only hold for that one engagement
+- Anything the material does not support and that you could only write by guessing
+- Anything with nothing left once the identifying information is removed
 
-1つの資料から得られるノウハウは0件のこともある。無理に作らず、その場合は理由を添えて「抽出なし」と報告する。
+A document may yield nothing. Do not force it; report "nothing extracted" with the reason.
 
-### 4. 概念に引き上げて下書きを書く
+### 4. Lift to a concept and write the draft
 
-拾った候補は、まだ「その資料の中の出来事や教訓」である。固有名詞を消すだけで終わらせず、設定された抽象化の度合い(`abstraction_level`)に合わせて引き上げてから書く。度合いごとの違い、考え方と手順、例は [references/conceptualization.md](references/conceptualization.md) にある。下書きを書く前に必ず読む。
+The candidates are still "events and lessons inside that document". Do not stop at removing proper nouns. Lift them to the configured abstraction level (`abstraction_level`) before writing. The differences between levels, the reasoning, the procedure, and examples are in [references/conceptualization.md](references/conceptualization.md). Read it before writing any draft.
 
-- `high`(既定): 分野をまたいで成り立つ**原理**まで引き上げる。
-- `medium`: 分野の言葉は使ってよいが、同じ分野の別の組織でも通用する方法と理由にする。元の資料の構成はなぞらない。
-- `low`: 具体的な教訓と手順を、実務で使える形のまま残す。固有名詞は取り除く。
+- `high` (default): lift to a **principle** that holds across fields.
+- `medium`: field vocabulary is allowed, but write a method and reason that would hold in another organization in the same field. Do not follow the source's structure.
+- `low`: keep concrete lessons and steps in a form that can be used directly. Remove proper nouns.
 
-以下は `high` の場合の要点である。`medium` と `low` では、参照先の表で許されている範囲だけ緩める。
+The points below are for `high`. For `medium` and `low`, relax only what the table in the reference allows.
 
-- ノウハウの中心は「なぜそうなるのか」という原理に置く。出来事は書かず、その場の教訓は「やり方」の一つとして添える。
-- 元の資料の分野の言葉を使わずに説明できるか、まったく違う場面を2つ挙げて当てはまるかを確かめる。できなければ、まだ引き上げが足りない。
-- 「どんなときには成り立たないか」を言えなければ、一般論まで上がりすぎている。
-- 同じ原理に行き着く候補は1件にまとめる。1つの資料から残るのは、多くの場合1〜3件である。候補の数だけ下書きを作らない。
-- 元の資料の項目名・並び順・造語・数値・言い回し・経緯を持ち込まない。資料を閉じて、原理から自分の構成で書き起こす。
-- 裏付けは、種類(`basis`)と数だけを書く。資料にあるのが意見や感想だけなら `見立て` とする。
+- Put the principle, "why it happens", at the center. Do not write the event; add the lesson from that setting as one of the practices.
+- Check that you can explain it without the source's field vocabulary, and that you can name two quite different settings where it applies. If you cannot, it is not lifted far enough.
+- If you cannot say when it would not hold, it has gone up into a platitude.
+- Merge candidates that come down to the same principle. One document usually leaves one to three. Do not write a draft per candidate.
+- Do not carry over the source's item names, ordering, coined terms, numbers, wording, or narrative. Close the document and write from the principle in your own structure.
+- For evidence, record only the kind (`basis`) and the count. If the material offers only opinions or impressions, use `opinion`.
 
-ユーザーのコメントがもとになる場合は、主張を別の水準へ書き換えない。主張はそのまま残し、読み取れる原理は提案として添えて、確認の際に採否を尋ねる。
+When the user's comment is the basis, do not rewrite the claim at a different level. Keep the claim as it is, add any principle you can read from it as a suggestion, and ask at confirmation whether to adopt it.
 
-1ノウハウ = 1原理 = 1ファイル。書式は [references/knowhow-template.md](references/knowhow-template.md) に従う。
+One know-how = one principle = one file. Follow the format in [references/knowhow-template.md](references/knowhow-template.md).
 
-この時点ではノウハウフォルダに書き込まない。ユーザーが内容を確認するまでは下書きであり、下書きは `<元資料フォルダ>/_drafts/` に置く。ここは git 管理外で、コミット前フックでもコミットが拒否される。`_drafts/` の中身は抽出の元資料として扱わない。
+Do not write into the know-how folder yet. Until the user has confirmed, the text is a draft, and drafts go in `<inbox folder>/_drafts/`. That location is untracked by git and rejected by the pre-commit hook. Never treat the contents of `_drafts/` as source material.
 
-### 5. 漏れを確認する
+### 5. Check for leaks
 
-下書きを、**元を突き止めようとする人**の立場で読み直す。相手は元の資料を知っている関係者か、言い回しを手がかりに検索する第三者だと想定する。固有名詞が残っていないことを確かめるだけでは足りない。次の点を一つずつ確かめ、当てはまれば書き直す。`medium` と `low` では、その度合いで残してよいとされているもの(分野の言葉、丸めた数値、`low` での項目の列挙など)は対象から外すが、設定された度合いより具体的になっていないかは確かめる。
+Reread the draft as **someone trying to trace it back to its source**. Assume a person who knows the original material, or a third party searching on distinctive wording. Confirming that no proper nouns remain is not enough. Check each point below and rewrite where it applies. For `medium` and `low`, leave out of scope what that level permits (field vocabulary, rounded numbers, item lists at `low`), but still check that the draft is not more concrete than the configured level.
 
-- 列挙の項目名や並び順が、元の資料と同じになっていないか。
-- 元の資料に特有の造語や珍しい言い回しが残っていないか。
-- 原理に関係のない数値や、進行の細部が残っていないか。
-- 元の文や発言を、語順を保ったまま言い換えた文がないか。
-- 出来事の経緯を語る段落(「元になった事例では…」「実際に…したことがある」)がないか。
-- 例が、元の事例そのものになっていないか。
-- 「やり方」に、原理から導けない項目(元の資料に書いてあっただけのもの)が混ざっていないか。並びが元の資料の流れのままになっていないか。
-- タグ、カテゴリ、`source_type`、ファイル名が、本文で消した文脈を書き戻していないか。
-- 同じ資料から作った下書き同士を並べると、元の出来事が復元できてしまわないか。
+- Do the item names or ordering of a list match the source?
+- Does a coined term or unusual phrase from the source remain?
+- Do numbers or procedural details remain that have nothing to do with the principle?
+- Is there a sentence that paraphrases the source while keeping its word order?
+- Is there a paragraph narrating what happened ("in the original case…", "this actually happened when…")?
+- Is an example simply the original case?
+- Does any practice not follow from the principle (something that is there only because the source said it)? Is the order the same as the flow of the source?
+- Do the tags, category, `source_type`, or file name put back the context that the body removed?
+- If drafts from the same document are read side by side, can the original event be reconstructed?
 
-あわせて、概念として成り立っているかも確かめる。
+Also check that it stands as a concept.
 
-- 元の資料とは違う場面の人が読んで、自分の状況に当てはめられるか。
-- 資料がなくても書けた一般論になっていないか。
+- Can someone in a different setting from the source read it and apply it to their own situation?
+- Has it become a platitude that could have been written without the material?
 
-続けて、下書きに機械チェックをかける。
+Then run the mechanical check on the drafts.
 
 ```bash
-python3 .claude/skills/extract-knowhow/scripts/check_sensitive.py "<元資料フォルダ>/_drafts"
+python3 .claude/skills/extract-knowhow/scripts/check_sensitive.py "<inbox folder>/_drafts"
 ```
 
-エラーは必ず解消する。警告は内容を見て、問題なければそのままでよい(公開されているツールの公式URLなど)。このスクリプトが拾えるのは形式的なパターンと登録語ファイルの語だけなので、通過しても上の読み直しの代わりにはならない。
+Errors must be resolved. Look at each warning and leave it if it is fine (an official URL for a public tool, for example). The script only catches formal patterns and the words in the terms file, so passing it does not replace the reread above.
 
-資料に出てきた固有名詞のうち今後も出てきそうなもの(自社名、主要顧客名、製品名など)は、ユーザーに確認したうえで登録語ファイルに追加する。このファイルは git 管理外。よくある姓のように、無関係な文脈でも頻繁に現れる語は、登録すると誤検知が増えることを伝える。
+For proper nouns in the material that are likely to come up again (the user's own company, key clients, product names), check with the user and add them to the terms file, which is untracked by git. Mention that registering a word that appears often in unrelated contexts, such as a common surname, will cause false positives.
 
-### 6. 既存ノウハウと突き合わせる
+### 6. Compare with existing know-how
 
-ノウハウフォルダの `INDEX.md` と同じカテゴリのファイルを見て、同じ趣旨のノウハウがすでにあるか確認し、下書きごとに扱いを決める。
+Read `INDEX.md` in the know-how folder and the files in the same category to see whether know-how with the same point already exists, and decide how each draft will be handled.
 
-- **新しい**: `<ノウハウフォルダ>/<カテゴリ>/<短いタイトル>.md` として追加する。カテゴリは既存のものを優先し、どれにも合わないときだけ新設する。
-- **同じ趣旨がある**: 新規ファイルを作らず既存ファイルを更新する。既存のノウハウと抽象化の度合いが違う場合は、既存の度合いに合わせて書き足すか、新しい度合いで書き直すかを、確認の際にユーザーへ尋ねる。新しい適用条件や反例が得られたならそれを追記し、`updated` と `evidence_count` を更新する。下書きは、更新後のファイル全体の形に書き直す。
-- **矛盾する**: どちらかを消さず、条件の違いとして両方を書く。条件が分からなければその旨を残す。
+- **New**: add as `<know-how folder>/<category>/<short title>.md`. Prefer an existing category; create one only when none fits.
+- **Same point exists**: update the existing file rather than creating one. Add any new condition or counterexample, and update `updated` and `evidence_count`. Rewrite the draft as the full file after the update. If the existing know-how was written at a different abstraction level, ask at confirmation whether to add to it at the existing level or rewrite it at the new one.
+- **Contradicts**: do not delete either. Write both as a difference in conditions. If the condition is unknown, say so.
 
-ファイル名・カテゴリ名にも特定情報を含めない。
+Keep identifying information out of file and category names too.
 
-### 7. ユーザーに内容を確認してもらう
+### 7. Have the user confirm the content
 
-保存する前に、下書きをユーザーに見せて確認を求める。**ユーザーが問題ないと答えるまで、ノウハウフォルダと `INDEX.md` には何も書き込まない。**
+Before saving, show the drafts to the user and ask for confirmation. **Write nothing to the know-how folder or `INDEX.md` until the user says it is fine.**
 
-特定されないかどうかを最終的に判断できるのは、元の案件や関係者を知っているユーザーだけである。機械チェックや自分の読み直しを通っていても、この確認は省かない。
+Only the user, who knows the original engagement and the people involved, can finally judge whether something is identifiable. Do not skip this step even when the mechanical check and your own reread both passed.
 
-見せる内容:
+Show:
 
-- 下書きの**全文**。要約や抜粋で済ませない。複数ある場合は番号を振り、1件ずつ区切って示す。
-- それぞれについて、元の資料のどんな種類の内容から、どういう原理として引き上げたかを一言で(出来事そのものは書かない)。引き上げすぎ・引き上げ不足だと感じる場合に、ユーザーが指摘しやすくするため。
-- 使った抽象化の度合い(`low` / `medium` / `high`)。`low` や `medium` で非公開の資料を扱った場合は、構成や言い回しから出どころが分かりやすいことを添える。
-- それぞれの保存先(カテゴリとファイル名)と、新規か既存の更新か。更新の場合は、既存の内容から何が変わるかが分かるように示す。
-- 取り除いた特定情報の**種類**(「顧客企業名、担当者名、契約金額」など。値そのものは書かない)。
-- 自分で判断に迷った点(残した属性や数値で、特定につながるかもしれないもの)。元が公開されている資料で、複数のノウハウを残す場合は、論点の組み合わせから元を検索できる可能性が残ることも伝える。
-- 原理の説明や「当てはまらない場合」のうち、**資料に書かれておらず自分が組み立てた部分**。概念に引き上げると、資料にない説明を補うことになる。どこが資料にもとづき、どこが自分の推論かを区別して示し、採否をユーザーに委ねる。
-- ユーザーのコメントをもとにした場合は、**ユーザーが述べた内容と、自分が補った・提案した内容の区別**。未確認のままにしている項目(理由、当てはまる条件など)があれば、ここで尋ねる。ユーザーが分からないと答えた項目は、未確認と書いたまま保存してよい。
-- 候補に挙がったがノウハウにしなかったものと、その理由。
+- The **full text** of each draft. No summaries or excerpts. If there are several, number them and separate them clearly.
+- For each, one line on what kind of content in the source it came from and what principle it was lifted to (not the event itself), so that the user can say if it was lifted too far or not far enough.
+- The abstraction level used (`low` / `medium` / `high`). If non-public material was handled at `low` or `medium`, add that the structure and wording make the source easier to recognize.
+- Where each will be saved (category and file name), and whether it is new or an update. For an update, show what changes from the existing content.
+- The **kinds** of identifying information removed ("client name, contact name, contract value"), never the values.
+- Points you were unsure about (attributes or numbers left in that might identify). If the source is public and several know-how items are being kept, say that the combination of topics may still let someone find the source by searching.
+- The parts of the principle and of "when it does not apply" that **the material does not state and you reasoned out yourself**. Lifting to a concept means adding explanation that is not in the source. Separate what rests on the material from your own inference and leave the choice to the user.
+- When the user's comment is the basis, **the difference between what the user said and what you added or suggested**. If any items are left unconfirmed (reason, conditions), ask here. Items the user cannot answer may be saved marked as unconfirmed.
+- Candidates you did not turn into know-how, and why.
 
-そのうえで、「この内容で保存してよいか。問題があれば、どの下書きのどこをどう直すか教えてほしい」と尋ねる。
+Then ask: "May I save this as it is? If anything is wrong, tell me which draft, where, and how to change it."
 
-ユーザーの答えに応じて進める。
+Proceed according to the answer.
 
-- **問題ない**: 手順8へ進む。
-- **修正の指摘があった**: 指摘に沿って下書きを直す。指摘された箇所だけでなく、同じ問題が他の箇所や他の下書きにもないか確認して合わせて直す。直したら手順5の確認をやり直し、修正後の全文と、どこをどう変えたかを示して、もう一度確認を求める。問題ないと言われるまで繰り返す。
-- **一部だけ承認された**: 承認されたものだけを保存し、残りは修正を続けるか、ユーザーの指示があれば破棄する。
-- **保存しないと言われた**: 保存せず、下書きを削除する。
+- **Fine**: go to step 8.
+- **Corrections**: revise as directed. Check whether the same problem appears elsewhere in that draft or in the others and fix those too. Redo the checks in step 5, then show the revised full text and what changed, and ask again. Repeat until the user says it is fine.
+- **Partly approved**: save only what was approved. Keep revising the rest, or discard it if the user says so.
+- **Do not save**: do not save, and delete the drafts.
 
-指摘の内容があいまいなとき(「もう少しぼかして」など)は、どの記述のことかを確認してから直す。承認と受け取ってよいか迷う返事のときも、保存する前に確認する。
+When a correction is vague ("blur it a bit more"), find out which passage is meant before changing anything. When a reply might or might not be approval, check before saving.
 
-修正の指摘が、今後の抽出にも当てはまる基準(「この種の数値は常に落とす」など)であれば、[references/anonymization.md](references/anonymization.md) に反映するかをユーザーに尋ねる。
+If a correction is a standard that would apply to future extractions as well ("always drop this kind of number"), ask the user whether to reflect it in [references/anonymization.md](references/anonymization.md).
 
-### 8. 保存する
+### 8. Save
 
-承認された下書きを、承認された内容のままノウハウフォルダに保存する。保存の際に内容を書き換えない。
+Save the approved drafts into the know-how folder exactly as approved. Do not edit the content while saving.
 
-- 新規の場合は `INDEX.md` に1行追加する。`INDEX.md` がまだなければ作る。
-- 更新の場合は、要旨が変わっていれば `INDEX.md` の行も直す。
-- 保存できたら、対応する下書きを `_drafts/` から削除する。
+- For a new item, add one line to `INDEX.md`. Create `INDEX.md` if it does not exist.
+- For an update, fix the line in `INDEX.md` if the gist changed.
+- Once saved, delete the corresponding draft from `_drafts/`.
 
-最後にノウハウフォルダ全体へ機械チェックをかける。
+Finally, run the mechanical check on the whole know-how folder.
 
 ```bash
 python3 .claude/skills/extract-knowhow/scripts/check_sensitive.py
 ```
 
-### 9. 報告する
+### 9. Report
 
-次の内容を簡潔に伝える。
+Briefly report:
 
-- 追加・更新したノウハウ(タイトルと保存先)
-- 保存しなかったもの、修正が途中のもの
-- 機械チェックの結果
+- The know-how added or updated (title and location)
+- Anything not saved, or still being revised
+- The result of the mechanical check
 
-コミットやプッシュは、ユーザーに頼まれたときだけ行う。
+Commit or push only when the user asks.
 
-## リポジトリ外(チャットなど)で使う場合
+## Outside the repository (chat and similar)
 
-設定ファイルも保存先もない環境では、資料からの抽出でもユーザーのコメントをもとにする場合でも、手順1〜5を行い(下書きはファイルに書かず、機械チェックも実行できないので、手順5の読み直しをより丁寧に行う)、手順7と同じようにノウハウの全文を回答として示して確認を求める。修正の指摘があれば直して示し直す。問題ないと言われたら、ユーザーがリポジトリへ保存できるよう、確定した全文に推奨のカテゴリとファイル名を添えて出力する。
+Where there is no config file and nowhere to save, do steps 1 to 5 whether extracting from a document or working from the user's comment (drafts are not written to files and the mechanical check cannot run, so do the reread in step 5 with extra care). Then show the full text as in step 7 and ask for confirmation. Revise and show again if corrections come back. Once the user says it is fine, output the final text with a recommended category and file name so the user can save it into the repository.

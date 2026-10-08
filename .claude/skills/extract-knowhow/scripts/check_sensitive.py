@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
-"""ノウハウファイルに特定情報が残っていないかを機械的に確認する。
+"""Mechanically check know-how files for leftover identifying information.
 
-使い方:
-    python3 check_sensitive.py [--strict] [PATH ...]   PATH を確認(省略時は設定の knowhow_dir)
-    python3 check_sensitive.py --pre-commit            コミット対象のファイルを確認(git フック用)
-    python3 check_sensitive.py --show-config           解決済みのフォルダ設定を表示
+Usage:
+    python3 check_sensitive.py [--strict] [PATH ...]   check PATH (default: the configured knowhow_dir)
+    python3 check_sensitive.py --pre-commit            check the files staged for commit (for the git hook)
+    python3 check_sensitive.py --show-config           show the resolved settings
 
-フォルダの場所は knowhow.config.json で指定する。knowhow.config.local.json があれば
-その値で上書きする。どちらもなければ既定値(knowhow / inbox / .sensitive-terms.txt / policies)を使う。
-相対パスは設定ファイルのあるフォルダが基準。絶対パスと ~ も使える。
-抽象化の度合い(abstraction_level: low / medium / high)も同じファイルで指定する。
+Settings come from knowhow.config.json; values in knowhow.config.local.json override
+them. With neither file, the defaults apply (knowhow / inbox / .sensitive-terms.txt /
+policies). Relative paths are resolved from the folder holding the config file;
+absolute paths and ~ also work. The abstraction level (abstraction_level: low /
+medium / high) is set in the same file.
 
-終了コード: 0 = 問題なし、1 = 特定情報の疑いあり、2 = 設定や引数の誤り。
---strict を付けると警告もエラーとして扱う。
+Exit codes: 0 = clean, 1 = possible identifying information, 2 = bad settings or arguments.
+With --strict, warnings count as errors.
 """
 
 from __future__ import annotations
@@ -24,26 +25,27 @@ import subprocess
 import sys
 from pathlib import Path
 
+# The phone, postal code, corporate suffix and honorific patterns target Japanese text.
 ERROR_PATTERNS = {
-    "メールアドレス": re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+"),
-    "電話番号": re.compile(
+    "email": re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+"),
+    "phone number": re.compile(
         r"(?<![\d-])0\d{1,4}-\d{1,4}-\d{3,4}(?![\d-])"
         r"|(?<!\d)0[789]0\d{8}(?!\d)"
         r"|\+81[\d-]{9,}"
     ),
-    "郵便番号": re.compile(r"(?<![\d-])\d{3}-\d{4}(?![\d-])"),
-    "IPアドレス": re.compile(r"(?<![\d.])(?:\d{1,3}\.){3}\d{1,3}(?![\d.])"),
+    "postal code": re.compile(r"(?<![\d-])\d{3}-\d{4}(?![\d-])"),
+    "IP address": re.compile(r"(?<![\d.])(?:\d{1,3}\.){3}\d{1,3}(?![\d.])"),
 }
 
 WARNING_PATTERNS = {
-    "法人格": re.compile(
+    "corporate suffix": re.compile(
         r"株式会社|有限会社|合同会社|㈱|\bInc\.|\bCo\.,? ?Ltd\b|\bLLC\b|\bCorp\."
     ),
     "URL": re.compile(r"https?://[^\s)>\]]+"),
-    "敬称付きの名前": re.compile(r"[一-龥々]{1,4}(?:さん|様|氏)(?![名族々子式])"),
+    "name with honorific": re.compile(r"[一-龥々]{1,4}(?:さん|様|氏)(?![名族々子式])"),
 }
 
-# 敬称パターンに一致するが人名ではない語(一致した文字列の末尾で判定する)
+# Words that match the honorific pattern but are not names (judged by the end of the match)
 NOT_A_NAME_SUFFIXES = (
     "客様", "皆様", "皆さん", "奥様",
     "仕様", "同様", "模様", "多様", "一様", "異様", "両様", "各様",
@@ -59,11 +61,10 @@ DEFAULTS = {
     "policies_dir": "policies",
 }
 
-# 中身を git に入れてはいけないフォルダ(元資料、規定)
+# Folders whose contents must never go into git (source documents, policies)
 PRIVATE_DIR_KEYS = ("inbox_dir", "policies_dir")
 
-
-# パス以外の設定: キー -> (既定値, 使える値)
+# Non-path settings: key -> (default, allowed values)
 OPTIONS = {
     "abstraction_level": ("high", ("low", "medium", "high")),
 }
@@ -83,10 +84,10 @@ def find_root(start: Path) -> Path:
 def load_config(
     config_path: Path | None,
 ) -> tuple[Path, list[Path], dict[str, Path], dict[str, str]]:
-    """(基準フォルダ, 読み込んだ設定ファイル, 解決済みパス, パス以外の設定) を返す。"""
+    """Return (base folder, config files read, resolved paths, non-path settings)."""
     if config_path is not None:
         if not config_path.is_file():
-            raise ConfigError(f"設定ファイルが見つかりません: {config_path}")
+            raise ConfigError(f"config file not found: {config_path}")
         root = config_path.resolve().parent
         candidates = [config_path]
     else:
@@ -101,22 +102,20 @@ def load_config(
         try:
             data = json.loads(candidate.read_text(encoding="utf-8"))
         except json.JSONDecodeError as error:
-            raise ConfigError(f"{candidate}: JSON として読めません({error})")
+            raise ConfigError(f"{candidate}: not valid JSON ({error})")
         if not isinstance(data, dict):
-            raise ConfigError(f"{candidate}: オブジェクト形式で書いてください")
+            raise ConfigError(f"{candidate}: must be a JSON object")
         unknown = sorted(set(data) - set(values))
         if unknown:
             raise ConfigError(
-                f"{candidate}: 未知のキー {', '.join(unknown)}(使えるのは {', '.join(values)})"
+                f"{candidate}: unknown key(s) {', '.join(unknown)} (allowed: {', '.join(values)})"
             )
         for key, value in data.items():
             if not isinstance(value, str) or not value.strip():
-                raise ConfigError(f"{candidate}: {key} は空でない文字列で指定してください")
+                raise ConfigError(f"{candidate}: {key} must be a non-empty string")
         for key, (_, allowed) in OPTIONS.items():
             if key in data and data[key] not in allowed:
-                raise ConfigError(
-                    f"{candidate}: {key} は {' / '.join(allowed)} のいずれかで指定してください"
-                )
+                raise ConfigError(f"{candidate}: {key} must be one of {' / '.join(allowed)}")
         values.update(data)
         loaded.append(candidate)
 
@@ -146,7 +145,7 @@ def collect_files(paths: list[Path]) -> list[Path]:
         elif path.is_file():
             files.append(path)
         else:
-            raise ConfigError(f"確認対象が見つかりません: {path}")
+            raise ConfigError(f"nothing to check at: {path}")
     return files
 
 
@@ -156,14 +155,14 @@ def check_file(path: Path, terms: list[str]) -> tuple[list[str], list[str]]:
     name_lower = path.name.lower()
     for term, lowered in lowered_terms:
         if lowered in name_lower:
-            errors.append(f"{path}: [登録語] ファイル名に「{term}」")
+            errors.append(f"{path}: [registered term] file name contains \"{term}\"")
 
     for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
         location = f"{path}:{number}"
         line_lower = line.lower()
         for term, lowered in lowered_terms:
             if lowered in line_lower:
-                errors.append(f"{location}: [登録語] {term}")
+                errors.append(f"{location}: [registered term] {term}")
         for label, pattern in ERROR_PATTERNS.items():
             for match in pattern.finditer(line):
                 errors.append(f"{location}: [{label}] {match.group()}")
@@ -187,7 +186,7 @@ def git_toplevel(directory: Path) -> Path | None:
 
 
 def is_ignored(directory: Path) -> bool | None:
-    """フォルダの中身が git から無視されるか。git 管理外の場所なら None。"""
+    """Whether git ignores the folder's contents. None if the folder is outside git."""
     toplevel = git_toplevel(directory)
     if toplevel is None:
         return None
@@ -198,7 +197,7 @@ def is_ignored(directory: Path) -> bool | None:
 def staged_files() -> list[Path]:
     toplevel = git_toplevel(Path.cwd())
     if toplevel is None:
-        raise ConfigError("git リポジトリの中で実行してください")
+        raise ConfigError("run this inside a git repository")
     result = git("diff", "--cached", "--name-only", "-z", "--diff-filter=ACM", cwd=toplevel)
     return [toplevel / name for name in result.stdout.split("\0") if name]
 
@@ -206,11 +205,11 @@ def staged_files() -> list[Path]:
 def show_config(
     root: Path, loaded: list[Path], paths: dict[str, Path], options: dict[str, str]
 ) -> int:
-    print(f"基準フォルダ: {root}")
-    names = ", ".join(path.name for path in loaded) or "なし(既定値を使用)"
-    print(f"設定ファイル: {names}")
+    print(f"base folder: {root}")
+    names = ", ".join(path.name for path in loaded) or "none (using defaults)"
+    print(f"config files: {names}")
     for key, path in paths.items():
-        note = "" if path.exists() else "  ※存在しません"
+        note = "" if path.exists() else "  (does not exist)"
         print(f"{key}: {path}{note}")
     for key, value in options.items():
         print(f"{key}: {value}")
@@ -218,7 +217,7 @@ def show_config(
     for key in PRIVATE_DIR_KEYS:
         if is_ignored(paths[key]) is False:
             print(
-                f"WARNING {key} が git 管理対象になっています。.gitignore に追加してください: {paths[key]}",
+                f"WARNING {key} is tracked by git. Add it to .gitignore: {paths[key]}",
                 file=sys.stderr,
             )
     return 0
@@ -226,11 +225,11 @@ def show_config(
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("paths", nargs="*", type=Path, help="確認するファイルやフォルダ(省略時は knowhow_dir)")
-    parser.add_argument("--config", type=Path, help=f"設定ファイル(既定: {CONFIG_FILENAME} を上位へ探索)")
-    parser.add_argument("--strict", action="store_true", help="警告もエラーとして扱う")
-    parser.add_argument("--pre-commit", action="store_true", help="コミット対象のファイルを確認する")
-    parser.add_argument("--show-config", action="store_true", help="解決済みのフォルダ設定を表示する")
+    parser.add_argument("paths", nargs="*", type=Path, help="files or folders to check (default: knowhow_dir)")
+    parser.add_argument("--config", type=Path, help=f"config file (default: search upward for {CONFIG_FILENAME})")
+    parser.add_argument("--strict", action="store_true", help="treat warnings as errors")
+    parser.add_argument("--pre-commit", action="store_true", help="check the files staged for commit")
+    parser.add_argument("--show-config", action="store_true", help="show the resolved settings")
     args = parser.parse_args()
 
     try:
@@ -255,13 +254,13 @@ def main() -> int:
         else:
             files = collect_files(args.paths or [paths["knowhow_dir"]])
     except ConfigError as error:
-        print(f"設定エラー: {error}", file=sys.stderr)
+        print(f"config error: {error}", file=sys.stderr)
         return 2
 
     terms = load_terms(paths["sensitive_terms_file"])
     errors, warnings = [], []
     for key, path in blocked:
-        errors.append(f"{path}: [管理外] {key} 配下のファイルはコミットできません")
+        errors.append(f"{path}: [private] files under {key} cannot be committed")
     for path in files:
         file_errors, file_warnings = check_file(path, terms)
         errors.extend(file_errors)
@@ -273,8 +272,8 @@ def main() -> int:
         print(f"WARNING {message}")
 
     print(
-        f"{len(files)} ファイルを確認: エラー {len(errors)} 件、警告 {len(warnings)} 件"
-        f"(登録語 {len(terms)} 語)",
+        f"Checked {len(files)} file(s): {len(errors)} error(s), {len(warnings)} warning(s)"
+        f" ({len(terms)} registered term(s))",
         file=sys.stderr,
     )
     if errors or (args.strict and warnings):

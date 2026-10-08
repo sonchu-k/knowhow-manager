@@ -1,11 +1,11 @@
 #!/bin/sh
-# コミット対象に元資料や特定情報が含まれていないか確認する。
-# 対象フォルダは knowhow.config.json の knowhow_dir / inbox_dir に従う。
-# 有効化: git config core.hooksPath .githooks
+# Check that the commit contains no source documents, policy documents, or identifying information.
+# The folders checked follow knowhow_dir / inbox_dir / policies_dir in knowhow.config.json.
+# Enable with: git config core.hooksPath .githooks
 
 python3 .claude/skills/extract-knowhow/scripts/check_sensitive.py --pre-commit
 status=$?
 if [ "$status" -eq 1 ]; then
-    echo "元資料または特定情報の可能性がある記述が見つかりました。修正してから再度コミットしてください。" >&2
+    echo "Possible source material or identifying information found. Fix it and commit again." >&2
 fi
 exit "$status"

@@ -1,77 +1,81 @@
 ---
 name: search-knowhow
-description: 蓄積されたノウハウを検索・参照し、いま直面している状況や質問に当てはまるものを根拠付きで提示する。「〜のノウハウある?」「過去の知見を調べて」「前に似たことなかった?」「ノウハウを踏まえてアドバイスして」と言われたとき、または提案・計画・振り返りなどの作業を始める前に過去の知見を確認したいときに使う。
+description: Search the accumulated know-how and present the items that apply to the situation or question at hand, with sources. Use when the user asks things like "do we have any know-how on…", "look up past lessons", "have we seen something like this before?", "advise me based on our know-how" (in Japanese, 「〜のノウハウある?」「過去の知見を調べて」「前に似たことなかった?」), or wants to check past lessons before starting a proposal, plan, or retrospective.
 ---
 
-# ノウハウ検索・参照
+# Search and reference know-how
 
-蓄積されたノウハウの中から、ユーザーの状況に当てはまるものを探して提示する。
+Find the know-how that applies to the user's situation among what has been accumulated, and present it.
 
-大事なのは、**蓄積されているものと、自分の一般知識を混ぜない**こと。ユーザーが知りたいのは「このリポジトリに何が残っているか」であり、もっともらしい一般論で埋めてしまうと、蓄積が役に立っているのか、何が足りていないのかが分からなくなる。
+What matters is **not mixing what is in the store with your own general knowledge**. The user wants to know what this repository holds. Filling the gaps with plausible generalities hides whether the store is doing its job and what is missing from it.
 
-## フォルダの場所
+## Language
 
-ノウハウの保存先(以下「ノウハウフォルダ」)は、リポジトリ直下の `knowhow.config.json` の `knowhow_dir` で決まる。作業の最初に読むこと。`knowhow.config.local.json` があれば、その値が優先される。相対パスは設定ファイルのあるフォルダが基準で、絶対パスや `~` も使える。設定ファイルがなければ `knowhow` を使う。
+Answer in the user's language. Know-how files may be in any language; frontmatter keys and the fixed values of `basis`, `source_type`, and `abstraction` are in English.
 
-## 手順
+## Where things live
 
-### 1. 何を探すかを決める
+The know-how folder is set by `knowhow_dir` in `knowhow.config.json` at the repository root. Read it before starting. If `knowhow.config.local.json` exists, its value takes precedence. Relative paths are resolved from the folder holding the config file; absolute paths and `~` also work. With no config file, use `knowhow`.
 
-ユーザーの質問や状況から、探すべき観点を言葉にする。状況の説明(「来週、初めての顧客に見積もりを出す」)であれば、そこで起こりそうな判断や失敗に分解する(見積もりの提示方法、初回提案、金額交渉など)。
+## Steps
 
-質問が広すぎて絞れない場合(「何かいいノウハウある?」)は、ノウハウフォルダの `INDEX.md` のカテゴリ構成を示して、どの領域かを尋ねる。
+### 1. Decide what to look for
 
-### 2. 候補を探す
+Put into words the angles to search from the user's question or situation. If it is a description of a situation ("next week I'm sending a quote to a new client"), break it into the decisions and failures likely to arise there (how to present the quote, first proposals, price negotiation).
 
-まずノウハウフォルダの `INDEX.md` を読む。全ノウハウのタイトルと1行の要旨が並んでいるので、ここで大半の候補が見つかる。
+If the question is too broad to narrow ("any good know-how?"), show the category structure from `INDEX.md` in the know-how folder and ask which area.
 
-次に本文を検索して、目次では拾えないものを補う。ノウハウは分野の言葉を避けて原理として書かれているので、ユーザーの言い回しや分野の用語そのままでは一致しないことが多い。ユーザーの状況で何が起きているのか(誰が何を判断できずにいるのか、何が抜け落ちているのか)を原理の言葉に置き換えてから探す。同義語・上位概念・関連する場面の語を複数試す。
+### 2. Find candidates
+
+Read `INDEX.md` in the know-how folder first. It lists every title with a one-line gist, and most candidates turn up there.
+
+Then search the body text to catch what the index misses. Know-how is written as principles that avoid field vocabulary, so the user's wording and field terms often will not match. Translate what is happening in the user's situation (who cannot decide what, what is going missing) into the language of principles before searching. Try several synonyms, broader concepts, and words for related settings.
 
 ```bash
-grep -rli -e "見積" -e "価格" -e "金額" "<ノウハウフォルダ>" --include="*.md"
-grep -rl "tags:.*合意形成" "<ノウハウフォルダ>" --include="*.md"
+grep -rli -e "quote" -e "price" -e "option" "<know-how folder>" --include="*.md"
+grep -rl "tags:.*agreement" "<know-how folder>" --include="*.md"
 ```
 
-言葉は違っても仕組みが同じノウハウ(たとえば「選択肢を並べると判断の種類が変わる」は見積もり以外にも使える)は、別カテゴリにあっても候補に入れる。
+Know-how with different wording but the same mechanism (for example, "laying out options changes the kind of decision" applies well beyond quotes) is a candidate even when it sits in another category.
 
-### 3. 読んで当てはまるか判断する
+### 3. Read and judge whether it applies
 
-候補のファイルは目次の1行で判断せず、本文を読む。特に次の点を確認する。
+Do not judge from the one line in the index; read the file. Check these in particular.
 
-- **使いどころ**: ユーザーの状況で、その原理が働く条件がそろっているか。ノウハウは分野をまたいで使える原理として書かれているので、分野が違うことだけを理由に外さない。
-- **当てはまらない場合**: ユーザーの状況がまさに例外に該当していないか。
-- **evidence_count**: 1のものは「一度そうだった」に過ぎない。複数回裏付けられたものと同じ強さで扱わない。
-- **abstraction**: `high` は分野をまたぐ原理として、`medium` は分野内の方法として、`low` は特定の業務の具体的な手順として書かれている。`low` や `medium` のものを別の分野に当てはめるときは、そのまま使えるとは限らないことを添える。
-- **basis**: `結果`(実際に行われ結果が確認された)、`見立て`(意見・感想にもとづき結果は未確認)、`経験則`(本人の経験で理由や条件は未整理)のどれか。`見立て` や `経験則` は、その旨を添えて示す。
-- **updated**: 古いものは、前提(ツール、体制、相場など)が変わっていないか気にかける。
+- **When to use**: Are the conditions for the principle to operate present in the user's situation? Know-how is written as principles usable across fields, so do not exclude something only because the field differs.
+- **When it does not apply**: Does the user's situation fall squarely into an exception?
+- **evidence_count**: 1 means only "it was so once". Do not treat it with the same weight as something supported several times.
+- **abstraction**: `high` is written as a principle across fields, `medium` as a method within a field, `low` as concrete steps for a particular kind of work. When applying `low` or `medium` know-how to another field, note that it may not carry over as it is.
+- **basis**: `result` (done and the result confirmed), `opinion` (views or impressions; result not confirmed), or `rule-of-thumb` (the person's experience; reason and conditions not worked out). Say so when presenting `opinion` or `rule-of-thumb` items.
+- **updated**: For older items, consider whether the premises (tools, organization, going rates) have changed.
 
-前提が合わないものは、無理に当てはめずに外す。部分的に合うものは、どこが合ってどこが合わないかを明示する。
+Leave out what does not fit rather than forcing it. For what fits in part, state which part fits and which does not.
 
-### 4. 答える
+### 4. Answer
 
-次の形で返す。
+Reply in this form.
 
-- **該当するノウハウ**: 関連の強い順に、それぞれ「要点」「ユーザーの状況にどう当てはまるか」「注意点」を書き、出典としてファイルへのリンクを付ける。件数が多くても、当てはまりの強い数件に絞る。
-- **確度**: 裏付けが1件のもの、前提が部分的にしか合わないものはその旨を添える。
-- **蓄積がない観点**: 探したが見つからなかった観点を明記する。
+- **Applicable know-how**: In order of relevance, each with its key point, how it applies to the user's situation, and cautions, with a link to the file as the source. Even when there are many, narrow to the few that apply most strongly.
+- **Confidence**: Note where the evidence is a single case, or the premises fit only in part.
+- **Angles with nothing stored**: State the angles you searched and found nothing for.
 
-ノウハウ同士が矛盾している場合は、片方を選んで隠さず、両方を示して条件の違いを説明する。
+When know-how items contradict each other, do not pick one and hide the other; show both and explain the difference in conditions.
 
-一般知識で補足したいことがあれば、「ここからは蓄積されたノウハウではなく一般的な考え方」と区切って、分けて書く。
+If you want to add something from general knowledge, mark it off: "from here on this is general thinking, not accumulated know-how", and keep it separate.
 
-該当するものが1件もない場合は、そのまま「該当なし」と伝える。探した語と観点を添えると、ユーザーが別の切り口を指示しやすい。
+If nothing applies at all, say "nothing found" plainly. Include the words and angles you searched so the user can point you in another direction.
 
-### 5. 蓄積につなげる
+### 5. Feed back into the store
 
-- 見つからなかった観点は、今後ノウハウとして残す価値があるかもしれない。関連する資料があれば `extract-knowhow` で抽出できることを一言伝える。
-- ユーザーが「このノウハウを試したらうまくいった/いかなかった」と話した場合は、それ自体が新しい裏付けや反例になる。該当ファイルの更新(`evidence_count`、注意点への追記)を提案する。更新時は `extract-knowhow` の特定情報の扱いに従う。
+- An angle with nothing stored may be worth capturing in future. Mention in one line that related material can be processed with `extract-knowhow`.
+- If the user says "I tried this know-how and it worked / did not work", that is new evidence or a counterexample. Suggest updating the file (`evidence_count`, an addition under "when it does not apply"). When updating, follow `extract-knowhow`'s handling of identifying information.
 
-## 注意
+## Cautions
 
-- 検索・参照だけではノウハウフォルダを書き換えない。更新は提案し、ユーザーが同意してから行う。
-- ユーザーの質問に含まれる固有名詞(顧客名、担当者名など)を、リポジトリ内のファイルに書き込まない。
-- 壊れたリンクや、目次にないファイル・ファイルのない目次行に気づいたら、回答の最後に報告する。
+- Searching and referencing do not change the know-how folder. Suggest updates and make them only after the user agrees.
+- Do not write proper nouns from the user's question (client names, contact names) into any file in the repository.
+- If you notice a broken link, a file missing from the index, or an index line with no file, report it at the end of the answer.
 
-## リポジトリ外(チャットなど)で使う場合
+## Outside the repository (chat and similar)
 
-ノウハウフォルダを参照できない環境では、ユーザーが添付・貼り付けたノウハウファイルだけを対象に、手順3〜5を行う。何も渡されていない場合は、参照できる蓄積がないことを伝え、ノウハウファイルまたは `INDEX.md` の添付を依頼する。
+Where the know-how folder cannot be read, work only from the know-how files the user attached or pasted, and do steps 3 to 5. If nothing was provided, say there is no store to refer to and ask for the know-how files or `INDEX.md`.

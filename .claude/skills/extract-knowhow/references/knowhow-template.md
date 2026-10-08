@@ -1,75 +1,79 @@
-# ノウハウファイルの書式
+# Know-how file format
 
-保存先: `<ノウハウフォルダ>/<カテゴリ>/<短いタイトル>.md`(ノウハウフォルダは `knowhow.config.json` の `knowhow_dir`)
+Location: `<know-how folder>/<category>/<short title>.md` (the know-how folder is `knowhow_dir` in `knowhow.config.json`)
 
-1ノウハウ = 1原理 = 1ファイル。
+One know-how = one principle = one file.
 
 ```markdown
 ---
-title: 決めてもらいたいときは選択肢を並べて判断の種類を変える
-category: 提案・合意形成
-tags: [合意形成, 選択肢, 提示の仕方]
-source_type: 文書
-basis: 結果
+title: When you want a decision, lay out options to change the kind of decision
+category: Proposals and agreement
+tags: [agreement, options, presentation]
+source_type: [document]
+basis: result
 abstraction: high
 created: 2026-10-08
 updated: 2026-10-08
 evidence_count: 1
 ---
 
-# 決めてもらいたいときは選択肢を並べて判断の種類を変える
+# When you want a decision, lay out options to change the kind of decision
 
-## 要点
+## Key point
 
-選択肢が1つだと相手の判断は「受けるか断るか」になり、複数あると「どれを選ぶか」になる。決めてもらいたいときは、判断の種類が変わる形で示す。
+With one option the other party's decision is "accept or refuse"; with several it becomes "which one". When you want a decision, present things in a form that changes the kind of decision.
 
-## 原理
+## Principle
 
-なぜそうなるのか。場面が変わっても成り立つ仕組みを、分野の言葉に頼らずに書く。
+Why it happens. The mechanism that holds when the setting changes, written without leaning on field vocabulary.
 
-## 使いどころ
+## When to use
 
-この原理が働く場面。元の資料の分野に限らず、当てはまる場面を複数挙げる。
+Settings where the principle operates. Name several, not limited to the field of the source.
 
-## やり方
+## How
 
-原理を使うための具体的な行動。箇条書きでよい。
+Concrete actions for using the principle. A bullet list is fine.
 
-## 当てはまらない場合
+## When it does not apply
 
-成り立たない条件、逆効果になる場合、未確認の点。
+Conditions under which it does not hold, cases where it backfires, unconfirmed points.
 
-## 裏付け
+## Evidence
 
-種類と数だけを書く。例: 「実際に行われて結果が確認されたもの1件」。出来事の経緯は書かない。
+Kind and count only. Example: "One case where it was done and the result was confirmed." Do not narrate what happened.
 ```
 
-## 各項目
+## Language
 
-- `title`: 原理か、原理にもとづく行動が分かる形にする。`high` では元の資料の分野の語に頼らない(「見積もりは3案出す」ではなく「決めてもらいたいときは選択肢を並べて判断の種類を変える」)。`medium` と `low` では分野の語を使ってよい。
-- `category`: ノウハウフォルダ直下のフォルダ名と一致させる。「どんな場面で使うか」で分け、元の資料の業界や案件の種類では分けない。
-- `tags`: 原理や使う場面を表す語にする。本文で消した業界・職種・案件の種類を書き戻さない。
-- `source_type`: 次の3つから選ぶ。細かい種類(技術ブログ、議事要旨など)は書かない。
-  - `文書`: 記事、報告書、提案書、メモなど
-  - `会議・会話の記録`: 議事録、チャットログなど
-  - `本人のコメント`: ユーザー自身が述べたこと
-  - 資料とコメントの両方なら `文書と本人のコメント` のように並べる。
-- `basis`: 裏付けの種類。`結果`(実際に行われ結果が確認されている)、`見立て`(意見・感想にもとづき結果は未確認)、`経験則`(本人の経験にもとづくが理由や条件は未整理)のいずれか。
-- `abstraction`: このノウハウを書いたときの抽象化の度合い(`low` / `medium` / `high`)。設定の `abstraction_level`、または依頼で指定された値を書く。
-- `evidence_count`: このノウハウを裏付けた、**互いに独立した資料・機会の数**。1つの資料や1回のコメントは、中に事例がいくつ含まれていても1と数える。別の資料や別の機会に同じ原理が確かめられたら増やす。
-- 「要点」と「原理」は必須。原理が分かっていない場合(ユーザーのコメントで理由が述べられていない場合など)は、推測で埋めず「原理は未確認(経験則)」と書く。
-- 「使いどころ」「やり方」「当てはまらない場合」は、書ける内容がなければ省略してよい。ただし「当てはまらない場合」が何も書けないときは、一般論まで上がりすぎていないかを疑う。
+Write the title, category, tags, and body in the user's language, including the section headings. In Japanese, use these headings so that files stay consistent: 要点 / 原理 / 使いどころ / やり方 / 当てはまらない場合 / 裏付け. Frontmatter keys and the fixed values of `source_type`, `basis`, and `abstraction` stay in English.
 
-上の例は `high` の書き方である。`low` や `medium` では、「原理」は短い理由の説明でよく、「やり方」に具体的な手順や項目を厚く書く。見出しの構成は度合いによらず同じにする。
+## Fields
 
-書き方の考え方と、度合いごとの違いは [conceptualization.md](conceptualization.md) を参照。
+- `title`: Make the principle, or the action based on it, clear. At `high`, do not lean on the source's field vocabulary ("When you want a decision, lay out options to change the kind of decision", not "Present three quotes"). At `medium` and `low`, field vocabulary is fine.
+- `category`: Must match a folder name directly under the know-how folder. Divide by "what setting it is used in", not by the industry or kind of engagement of the source.
+- `tags`: Words for the principle or the setting where it is used. Do not put back the industry, role, or kind of engagement removed from the body.
+- `source_type`: A list chosen from the three values below. Do not write a finer type (tech blog, committee minutes).
+  - `document`: articles, reports, proposals, notes
+  - `meeting-or-conversation`: minutes, chat logs
+  - `own-comment`: what the user said themselves
+  - For both a document and a comment, write `[document, own-comment]`.
+- `basis`: Kind of evidence. One of `result` (done and the result confirmed), `opinion` (based on views or impressions; result not confirmed), `rule-of-thumb` (based on the person's experience; reason and conditions not worked out).
+- `abstraction`: The abstraction level this know-how was written at (`low` / `medium` / `high`). Use `abstraction_level` from the config, or the value named in the request.
+- `evidence_count`: The number of **mutually independent documents or occasions** that support this know-how. One document or one comment counts as one however many cases it contains. Increase it when the same principle is confirmed by a different document or on a different occasion.
+- "Key point" and "Principle" are required. If the principle is not known (a user comment with no reason given, for example), do not fill it by guessing; write "principle not confirmed (rule of thumb)".
+- "When to use", "How", and "When it does not apply" may be omitted when there is nothing to write. If nothing at all can be written under "When it does not apply", suspect that it has gone up into a platitude.
 
-## INDEX.md への追記
+The example above is written at `high`. At `low` and `medium`, "Principle" can be a short statement of the reason, and "How" carries the concrete steps and items in more detail. Keep the same headings at every level.
 
-カテゴリの見出しの下に1行で追加する。リンクは `INDEX.md` からの相対パスで書く。
+For the thinking behind this and the differences between levels, see [conceptualization.md](conceptualization.md).
+
+## Adding to INDEX.md
+
+Add one line under the category heading. Write the link relative to `INDEX.md`. If the path contains spaces, wrap it in angle brackets.
 
 ```markdown
-## 提案・合意形成
+## Proposals and agreement
 
-- [決めてもらいたいときは選択肢を並べて判断の種類を変える](提案・合意形成/決めてもらいたいときは選択肢を並べて判断の種類を変える.md) — 選択肢が1つだと「受けるか断るか」、複数あると「どれを選ぶか」になる
+- [When you want a decision, lay out options to change the kind of decision](<Proposals and agreement/When you want a decision, lay out options to change the kind of decision.md>) — one option makes it "accept or refuse"; several make it "which one"
 ```
