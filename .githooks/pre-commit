@@ -1,0 +1,18 @@
+#!/bin/sh
+# コミット対象のノウハウファイルに特定情報が残っていないか確認する。
+# 有効化: git config core.hooksPath .githooks
+
+if git diff --cached --name-only --diff-filter=ACM -- inbox/ | grep -qv '^inbox/\.gitkeep$'; then
+    echo "inbox/ 配下のファイルはコミットできません(元資料は git 管理外)。" >&2
+    exit 1
+fi
+
+if [ -z "$(git diff --cached --name-only --diff-filter=ACM -- knowhow/)" ]; then
+    exit 0
+fi
+
+git diff --cached --name-only -z --diff-filter=ACM -- knowhow/ |
+    xargs -0 python3 .claude/skills/extract-knowhow/scripts/check_sensitive.py || {
+    echo "特定情報の可能性がある記述が見つかりました。修正してから再度コミットしてください。" >&2
+    exit 1
+}

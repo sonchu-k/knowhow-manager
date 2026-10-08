@@ -1,0 +1,11 @@
+# 元資料は特定情報を含むため管理しない
+inbox/*
+!inbox/.gitkeep
+
+# 検出したい固有名詞のリスト(それ自体が特定情報)
+.sensitive-terms.txt
+
+.DS_Store
+__pycache__/
+.env
+.claude/settings.local.json
